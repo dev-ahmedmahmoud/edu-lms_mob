@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Animated Vector Drawable for EduSync Splash Screen -->
+<!-- Center E symbol with rotating arrows -->
+<animated-vector xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:aapt="http://schemas.android.com/aapt">
+
+    <!-- Base Vector Drawable -->
+    <aapt:attr name="android:drawable">
+        <vector
+            android:width="288dp"
+            android:height="288dp"
+            android:viewportWidth="288"
+            android:viewportHeight="288">
+
+            <!-- Center E Symbol - EduSync brand -->
+            <group
+                android:name="centerSymbol"
+                android:pivotX="144"
+                android:pivotY="144"
+                android:scaleX="0.75"
+                android:scaleY="0.75">
+                <!-- Letter E - Main vertical bar -->
+                <path
+                    android:name="e_vertical"
+                    android:pathData="M108,84 L108,204 L132,204 L132,84 Z"
+                    android:fillColor="#F48020"/>
+                <!-- Letter E - Top horizontal bar -->
+                <path
+                    android:name="e_top"
+                    android:pathData="M108,84 L180,84 L180,108 L108,108 Z"
+                    android:fillColor="#F48020"/>
+                <!-- Letter E - Middle horizontal bar -->
+                <path
+                    android:name="e_middle"
+                    android:pathData="M108,132 L168,132 L168,156 L108,156 Z"
+                    android:fillColor="#F48020"/>
+                <!-- Letter E - Bottom horizontal bar -->
+                <path
+                    android:name="e_bottom"
+                    android:pathData="M108,180 L180,180 L180,204 L108,204 Z"
+                    android:fillColor="#F48020"/>
+            </group>
+
+            <!-- Rotating Arrows Group -->
+            <group
+                android:name="rotatingArrows"
+                android:pivotX="144"
+                android:pivotY="144"
+                android:rotation="0"
+                android:scaleX="0.75"
+                android:scaleY="0.75">
+
+                <!-- Arrow 1 - Top (Curved right) -->
+                <path
+                    android:name="arrow1"
+                    android:pathData="M144,52 C175,52 205,65 220,95 L210,100 L235,115 L245,85 L232,92 C215,55 180,38 144,38 L144,52 Z"
+                    android:fillColor="#1C4399"/>
+
+                <!-- Arrow 2 - Right (Curved down) -->
+                <path
+                    android:name="arrow2"
+                    android:pathData="M236,144 C236,175 223,205 193,220 L188,210 L173,235 L203,245 L196,232 C233,215 250,180 250,144 L236,144 Z"
+                    android:fillColor="#1C4399"/>
+
+                <!-- Arrow 3 - Bottom (Curved left) -->
+                <path
+                    android:name="arrow3"
+                    android:pathData="M144,236 C113,236 83,223 68,193 L78,188 L53,173 L43,203 L56,196 C73,233 108,250 144,250 L144,236 Z"
+                    android:fillColor="#1C4399"/>
+
+                <!-- Arrow 4 - Left (Curved up) -->
+                <path
+                    android:name="arrow4"
+                    android:pathData="M52,144 C52,113 65,83 95,68 L100,78 L115,53 L85,43 L92,56 C55,73 38,108 38,144 L52,144 Z"
+                    android:fillColor="#1C4399"/>
+
+            </group>
+
+        </vector>
+    </aapt:attr>
+
+    <!-- Animation for rotating arrows -->
+    <target android:name="rotatingArrows">
+        <aapt:attr name="android:animation">
+            <objectAnimator
+                android:propertyName="rotation"
+                android:valueFrom="0"
+                android:valueTo="360"
+                android:valueType="floatType"
+                android:duration="3000"
+                android:repeatCount="infinite"
+                android:repeatMode="restart"
+                android:interpolator="@android:interpolator/linear"/>
+        </aapt:attr>
+    </target>
+
+</animated-vector>
