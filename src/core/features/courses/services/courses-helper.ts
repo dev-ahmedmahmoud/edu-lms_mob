@@ -35,6 +35,7 @@ import { chainRequests, WSObservable } from '@classes/sites/authenticated-site';
 import { CoreSite } from '@classes/sites/site';
 import { LazyDefaultStandaloneComponent } from '@/app/app-routing.module';
 import { DEFAULT_TEXT_FORMAT } from '@singletons/text';
+import { Child } from './child-courses';
 
 // Id for a course item representing all courses (for example, for course filters).
 export const ALL_COURSES_ID = -1;
@@ -141,20 +142,45 @@ export class CoreCoursesHelperProvider {
         courses: CoreEnrolledCourseDataWithExtraInfo[],
         loadCategoryNames: boolean = false,
         options: CoreSitesCommonWSOptions = {},
+        // -------- SYNCOLOGY: Child Support ------- //
+        child?: Child,
+        // ------------- SYNCOLOGY: end ------------//
     ): WSObservable<CoreEnrolledCourseDataWithExtraInfo[]> {
-        if (!courses.length) {
+        // -------- SYNCOLOGY: Child Support Logic ------- //
+        if (!courses.length && !child) {
             return of([]);
         }
 
-        if (!loadCategoryNames && (courses[0].overviewfiles !== undefined || courses[0].displayname !== undefined)) {
+        if (!child && !loadCategoryNames && (courses[0].overviewfiles !== undefined || courses[0].displayname !== undefined)) {
             // No need to load more data.
             return of(courses);
         }
 
-        const courseIds = courses.map((course) => course.id).join(',');
+        const courseIds = child?.child_courses ? child?.child_courses : courses.map((course) => course.id).join(',');
+        // ------------- SYNCOLOGY: end ------------//
 
         // Get the extra data for the courses.
-        return CoreCourses.getCoursesByFieldObservable('ids', courseIds, options).pipe(map(coursesInfosArray => {
+        return CoreCourses.getCoursesByFieldObservable(
+            'ids',
+            courseIds,
+            options,
+            parseInt(child?.child_id as string, 10),
+        ).pipe(map(coursesInfosArray => {
+            // -------- SYNCOLOGY: Child Support Logic ------- //
+            if (child) {
+                const result: CoreEnrolledCourseDataWithExtraInfo[] = [];
+                coursesInfosArray?.map(courseInfoInstance => {
+                    result.push({
+                        ...courseInfoInstance,
+                        showgrades: courseInfoInstance.showgrades !== 0,
+                        enablecompletion: courseInfoInstance.enablecompletion !== 0,
+                    });
+                });
+
+                return result;
+            }
+            // ------------- SYNCOLOGY: end ------------//
+
             const coursesInfo = CoreArray.toObject(coursesInfosArray, 'id');
 
             courses.forEach((course) => {

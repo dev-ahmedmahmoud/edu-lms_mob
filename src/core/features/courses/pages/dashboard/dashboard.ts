@@ -11,9 +11,14 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
+// -------- SYNCOLOGY: Child Type Import ------- //
+import { Child } from '@features/courses/services/child-courses';
+import { HttpClient } from '@angular/common/http';
+import { Observable } from 'rxjs';
+import { inject } from '@angular/core';
+// ------------- SYNCOLOGY: end ------------//
 
 import { Component, OnDestroy, OnInit, signal, viewChildren } from '@angular/core';
-
 import { CoreCourses } from '../../services/courses';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
 import { CoreSites } from '@services/sites';
@@ -58,6 +63,9 @@ export default class CoreCoursesDashboardPage implements OnInit, OnDestroy {
 
     protected updateSiteObserver: CoreEventObserver;
     protected logView: () => void;
+    // -------- SYNCOLOGY: HttpClient Import ------- //
+    protected http = inject(HttpClient);
+    // ------------- SYNCOLOGY: end ------------//
 
     constructor() {
         // Refresh the enabled flags if site is updated.
@@ -92,6 +100,93 @@ export default class CoreCoursesDashboardPage implements OnInit, OnDestroy {
         this.loadContent();
     }
 
+    // -------- SYNCOLOGY: Get Children Logic ------- //
+
+    checkImageUrl(url: string): string{
+        let imageUrl = '';
+        if (url && url.trim() !== ''){
+            imageUrl = url;
+        } else {
+            imageUrl = 'assets/img/user-avatar.png';
+        }
+
+        return imageUrl;
+    }
+
+    /**
+     * Refresh the dashboard data.
+     */
+    async getChildren(): Promise<void> {
+        this.getChildrenData().subscribe(data => {
+            if (data) {
+                const children: Child[] = [];
+                let jsonObj = data;
+                if (typeof data === 'string') {
+                    jsonObj = JSON.parse(data);
+                }
+
+                for (const childKey in jsonObj){
+                    if (Object.prototype.hasOwnProperty.call(jsonObj, childKey)) {
+                        const childObj: Child = {
+                            child_email: jsonObj[childKey]['child_email'],
+                            child_id: jsonObj[childKey]['child_id'],
+                            child_image_url:  this.checkImageUrl(jsonObj[childKey]['child_image_url']),
+                            child_name: jsonObj[childKey]['child_name'],
+                            child_courses: '',
+                            childCourses: [],
+                            child_reportlink:  jsonObj[childKey]['child_reportlink'],
+                        };
+                        const child_courses: any[] = []; // eslint-disable-line @typescript-eslint/no-explicit-any
+                        for (const childCourseKey in jsonObj[childKey]['child_courses']){
+                            childObj.childCourses?.push(
+                                {
+                                    id: jsonObj[childKey]['child_courses'][childCourseKey]['id'],
+                                    courseImageUrl: '',
+                                    name:jsonObj[childKey]['child_courses'][childCourseKey]['name'],
+                                },
+                            );
+                            child_courses.push(jsonObj[childKey]['child_courses'][childCourseKey]['id']);
+                        }
+
+                        childObj.child_courses = child_courses.toString();
+                        childObj.onChildClick = (child: Child) => {
+                            CoreNavigator.navigate('../childdetail', { // Navigate to sibling route
+                                params: { child },
+                            });
+                        };
+                        children.push(childObj);
+                    }
+                }
+
+                this.blocks.update(blocks => {
+                    const filtered = blocks.filter((block: CoreCourseBlock) =>
+                        block.name !== 'parents' && block.name !== 'myoverview');
+
+                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                    return [{
+                        name: 'mychildren',
+                        visible: true,
+                        contents: { localContents: { children } } as any, // eslint-disable-line @typescript-eslint/no-explicit-any
+                    } as Partial<CoreCourseBlock>, ...filtered];
+                });
+            }
+        });
+    }
+
+    getChildrenData(): Observable<any> { // eslint-disable-line @typescript-eslint/no-explicit-any
+        const userId = this.userId ? this.userId : CoreSites.getCurrentSiteUserId();
+        const currentSite = CoreSites.getCurrentSite();
+        const currentSiteUrl = currentSite?.siteUrl;
+        // Use responseType 'text' if we need to parse, but let's try default (json) and handle type.
+        const url = `${currentSiteUrl}/webservice/rest/server.php?wstoken=6cfa7f60bf579ba0d59b779bad638364` +
+            `&wsfunction=get_child&moodlewsrestformat=json&parentid=${userId}`;
+
+        // Using {responseType: 'text'} to match source behavior if it expected string.
+        // Actually, let's use default (json) and NOT parse if it's already object.
+        return this.http.get(url);
+    }
+    // ------------- SYNCOLOGY: end ------------//
+
     /**
      * Convenience function to fetch the dashboard data.
      *
@@ -111,6 +206,10 @@ export default class CoreCoursesDashboardPage implements OnInit, OnDestroy {
 
                 this.hasMainBlocks = CoreBlockDelegate.hasSupportedBlock(blocks.mainBlocks);
                 this.hasSideBlocks = CoreBlockDelegate.hasSupportedBlock(blocks.sideBlocks);
+
+                // -------- SYNCOLOGY: Load Children ------- //
+                this.getChildren();
+                // ------------- SYNCOLOGY: end ------------//
             } catch (error) {
                 CoreAlerts.showError(error);
 

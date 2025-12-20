@@ -12,8 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, inject } from '@angular/core';
 import { Subscription } from 'rxjs';
+import { FormBuilder } from '@angular/forms';
 
 import { CoreSites } from '@services/sites';
 import { CoreQRScan } from '@services/qrscan';
@@ -28,6 +29,9 @@ import { CoreSharedModule } from '@/core/shared.module';
 import { CoreMainMenuUserButtonComponent } from '../../components/user-menu-button/user-menu-button';
 import { CoreContentLinksHelper } from '@features/contentlinks/services/contentlinks-helper';
 import { CoreUrl } from '@singletons/url';
+// -------- SYNCOLOGY: Child Menu Items Support ------- //
+import { HttpClient } from '@angular/common/http';
+// ------------- SYNCOLOGY: end ------------//
 
 /**
  * Page that displays the more page of the app.
@@ -53,6 +57,9 @@ export default class CoreMainMenuMorePage implements OnInit, OnDestroy {
     protected langObserver: CoreEventObserver;
     protected updateSiteObserver: CoreEventObserver;
     protected resizeListener?: CoreEventObserver;
+
+    protected formBuilder = inject(FormBuilder);
+    protected http = inject(HttpClient);
 
     constructor() {
         this.langObserver = CoreEvents.on(CoreEvents.LANGUAGE_CHANGED, () => this.loadCustomMenuItems());
@@ -118,7 +125,23 @@ export default class CoreMainMenuMorePage implements OnInit, OnDestroy {
      * Load custom menu items.
      */
     protected async loadCustomMenuItems(): Promise<void> {
-        this.customItems = await CoreMainMenu.getCustomMenuItems();
+        // -------- SYNCOLOGY: Child Menu Items Support ------- //
+        const items = await CoreMainMenu.getCustomMenuItems();
+        const userId = CoreSites.getCurrentSiteUserId();
+        const currentSite = CoreSites.getCurrentSite();
+        const currentSiteUrl = currentSite?.siteUrl;
+        const url = `${currentSiteUrl}/webservice/rest/server.php?wstoken=` +
+            `6cfa7f60bf579ba0d59b779bad638364&wsfunction=get_child&moodlewsrestformat=json&parentid=${userId}`;
+
+        this.http.get(url).subscribe((data) => {
+            if (data) {
+                this.customItems = items.filter((item) =>
+                    item.label !== 'Time Table' && item.label !== 'Report Card');
+            } else {
+                this.customItems = items;
+            }
+        });
+        // ------------- SYNCOLOGY: end ------------//
     }
 
     /**

@@ -4,3 +4,40 @@
         <core-dynamic-component [component]="componentClass()" [data]="data()" />
     </ion-card>
 }
+
+<!-- -------- SYNCOLOGY: My Children Block Template ------- -->
+@if (block().name === 'mychildren') {
+    <ion-item-divider>
+        <h2>{{ 'My Children' | translate }}</h2>
+    </ion-item-divider>
+    <div class="scroll-container">
+        @if (block() && block().contents && block().contents!.localContents && block().contents!.localContents.children) {
+            @for (child of block().contents!.localContents.children; track child) {
+                <div class="scroll-content">
+                    <ion-card class="item" (click)="child?.onChildClick(child)" style="height: 148px;">
+                        <ion-card-content>
+                            <ion-card-title />
+                            <ion-grid>
+                                <ion-row>
+
+                                    <ion-col size="4">
+                                        <ion-avatar>
+                                            <img style="border-radius:50%;" alt="Silhouette of a person's head"
+                                                src="{{ child.child_image_url }}" />
+                                        </ion-avatar>
+                                    </ion-col>
+
+                                    <ion-col size="8">
+                                        <p class="childName wrap">{{ child.child_name }}</p>
+                                        <p class="childEmail wrap">{{ child.child_email }}</p>
+                                    </ion-col>
+                                </ion-row>
+                            </ion-grid>
+                        </ion-card-content>
+                    </ion-card>
+                </div>
+            }
+        }
+    </div>
+}
+<!-- ------------- SYNCOLOGY: end ------------ -->

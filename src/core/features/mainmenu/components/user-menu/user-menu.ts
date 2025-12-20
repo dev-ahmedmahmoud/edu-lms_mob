@@ -200,10 +200,12 @@ export class CoreMainMenuUserMenuComponent implements OnInit, OnDestroy {
 
         await this.close(event);
 
+        // -------- SYNCOLOGY: Explicit Logout Behavior ------- //
         await CoreSites.logout({
-            forceLogout: true,
+            forceLogout: true, // Logout should require re-authentication. Seamless switching uses switchAccounts() flow instead.
             removeAccount: this.removeAccountOnLogout,
         });
+        // ------------- SYNCOLOGY: end ------------//
     }
 
     /**
