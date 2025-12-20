@@ -1,0 +1,152 @@
+[
+  {
+    "id": "tms",
+    "name": "Tanta Modern School",
+    "appId": {
+      "android": "com.tmsegypt.edusync",
+      "ios": "com.tms.edusync"
+    },
+    "version": {
+      "code": "51000",
+      "name": "5.1.0"
+    },
+    "moodle": [
+      {
+        "url": "https://lms.tms-egypt.com",
+        "siteName": "Tanta Modern School",
+      "alias": "TMS",
+      "image": "assets/img/tms.png"
+      }
+    ],
+    "branding": {
+      "image": "assets/img/tms.png"
+    }
+  },
+  {
+    "id": "future",
+    "name": "Future-Schools",
+    "appId": {
+      "android": "com.future.edusync",
+      "ios": "com.future.edusync"
+    },
+    "version": {
+      "code": "51000",
+      "name": "5.1.0"
+    },
+    "moodle": [
+      {
+        "url": "https://british.future-schools.co",
+        "siteName": "Future-Schools",
+        "alias": "Future",
+        "image": "assets/img/british.png"
+      },
+      {
+        "url": "https://national.future-schools.co",
+        "siteName": "Future-Schools",
+        "alias": "Future",
+        "image": "assets/img/national.png"
+      },
+      {
+        "url": "https://american.future-schools.co",
+        "siteName": "Future-Schools",
+        "alias": "Future",
+        "image": "assets/img/american.png"
+      }
+    ],
+    "branding": {
+      "image": "assets/img/edusync.png"
+    }
+  },
+  {
+    "id": "irtiqaa",
+    "name": "Irtiqaa Schools",
+    "appId": {
+      "android": "edu.irtiqaa.edusync",
+      "ios": "edu.irtiqaa.edusync"
+    },
+    "version": {
+      "code": "51000",
+      "name": "5.1.0"
+    },
+    "moodle": [
+      {
+        "url": "https://lms.irtiqaa.edu.eg",
+        "siteName": "Irtiqaa Schools",
+        "alias": "Irtiqaa",
+        "image": "assets/img/irtiqaa.png"
+      }
+    ],
+    "branding": {
+      "image": "assets/img/irtiqaa.png"
+    }
+  },
+  {
+    "id": "leaders",
+    "name": "Leaders International School",
+    "appId": {
+      "android": "com.leaders.edusync",
+      "ios": "com.leaders.edusync"
+    },
+    "version": {
+      "code": "51000",
+      "name": "5.1.0"
+    },
+    "moodle": [
+      {
+        "url": "https://lms.leaderschools.com",
+        "siteName": "Leaders International School",
+        "alias": "Leaders",
+        "image": "assets/img/leaders.png"
+      }
+    ],
+    "branding": {
+      "image": "assets/img/leaders.png"
+    }
+  },
+  {
+    "id": "royal",
+    "name": "Royal Schools",
+    "appId": {
+      "android": "com.royal.edusync",
+      "ios": "com.royal.edusync"
+    },
+    "version": {
+      "code": "51000",
+      "name": "5.1.0"
+    },
+    "moodle": [
+      {
+        "url": "https://lms.tantaroyalschools.edu.eg",
+        "siteName": "Royal Schools",
+        "alias": "Royal",
+        "image": "assets/img/royal.png"
+      }
+    ],
+    "branding": {
+      "image": "assets/img/royal.png"
+    }
+  },
+  {
+    "id": "pioneers",
+    "name": "Pioneers Schools",
+    "appId": {
+      "android": "com.pioneers.edusync",
+      "ios": "com.pioneers.edusync"
+    },
+    "version": {
+      "code": "51000",
+      "name": "5.1.0"
+    },
+    "moodle": [
+      {
+        "url": "https://pioneers-schools.com",
+        "siteName": "Pioneers Schools",
+        "alias": "Pioneers",
+        "image": "assets/img/pioneers.png"
+      }
+    ],
+    "branding": {
+      "image": "assets/img/pioneers.png"
+    }
+  }
+]

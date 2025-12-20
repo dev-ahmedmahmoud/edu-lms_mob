@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "841871684636",
+    "project_id": "irtiqaa-db2ce",
+    "storage_bucket": "irtiqaa-db2ce.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:841871684636:android:f2c9ff889d039105efdbd9",
+        "android_client_info": {
+          "package_name": "edu.irtiqaa.edusync"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAY8it8GB_KymLgMV9Da_FypsarzDvBpb4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

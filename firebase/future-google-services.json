@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "79184349345",
+    "project_id": "edusync-300906",
+    "storage_bucket": "edusync-300906.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:79184349345:android:c4392ac6ca70cd53c308e0",
+        "android_client_info": {
+          "package_name": "com.future.edusync"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "79184349345-8lt1934n3paktgspas21m6o2ppvs591k.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCdbft1poVUxmGa43VJWoiU8gCtvsZWKbU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "79184349345-8lt1934n3paktgspas21m6o2ppvs591k.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
