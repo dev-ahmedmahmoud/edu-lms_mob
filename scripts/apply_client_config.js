@@ -80,22 +80,6 @@ configXml = configXml.replace(/<name>[^<]*<\/name>/, `<name>${client.name}</name
 fs.writeFileSync(configXmlPath, configXml, 'utf8');
 console.log('Updated config.xml');
 
-// 1.1 Update moodle.config.json
-const moodleConfigPath = path.join(projectRoot, 'moodle.config.json');
-if (fs.existsSync(moodleConfigPath)) {
-    const moodleConfig = JSON.parse(fs.readFileSync(moodleConfigPath, 'utf8'));
-
-    // Update app_id and appname
-    // Using Android App ID as the main app_id as per config.xml convention above
-    moodleConfig.app_id = client.appId.android;
-    moodleConfig.appname = client.name;
-
-    fs.writeFileSync(moodleConfigPath, JSON.stringify(moodleConfig, null, 4), 'utf8');
-    console.log('Updated moodle.config.json with app_id and appname');
-} else {
-    console.warn('Warning: moodle.config.json not found, skipping update.');
-}
-
 // 2. Generate src/syncology/configs.ts
 const tsConfigPath = path.join(projectRoot, 'src', 'syncology', 'configs.ts');
 const tsContent = `// (C) Copyright 2015 Moodle Pty Ltd.
