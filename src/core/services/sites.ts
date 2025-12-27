@@ -1437,10 +1437,26 @@ export class CoreSitesProvider {
      * Finds a site with a certain URL. It will return the first site found.
      *
      * @param siteUrl The site URL.
+     * @param userId User ID to filter.
      * @returns Promise resolved with the site.
      */
-    async getSiteByUrl(siteUrl: string): Promise<CoreSite> {
-        const data = await this.loadSiteTokens(await this.sitesTable.getOne({ siteUrl }));
+    async getSiteByUrl(siteUrl: string, userId?: number): Promise<CoreSite> {
+        let siteEntries = await this.sitesTable.getMany({ siteUrl });
+
+        if (userId) {
+            // Filter by user ID.
+            siteEntries = siteEntries.filter((entry) => {
+                const info = entry.info ? CoreText.parseJSON<CoreSiteInfo>(entry.info) : undefined;
+
+                return info && info.userid == userId;
+            });
+        }
+
+        if (siteEntries.length === 0) {
+            throw new CoreError('Site not found');
+        }
+
+        const data = await this.loadSiteTokens(siteEntries[0]);
 
         return this.addSiteFromSiteListEntry(data);
     }

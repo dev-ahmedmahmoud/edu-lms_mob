@@ -400,7 +400,7 @@ export class CorePushNotificationsProvider {
         if (data.site) {
             site = await CoreSites.getSite(data.site);
         } else if (data.siteurl) {
-            site = await CoreSites.getSiteByUrl(data.siteurl);
+            site = await CoreSites.getSiteByUrl(data.siteurl, data.usertoid ? Number(data.usertoid) : undefined);
         }
 
         data.site = site?.getId();
