@@ -71,7 +71,17 @@ export default class CoreSettingsGeneralPage {
 
         // Get the supported languages.
         const languages = CoreConstants.CONFIG.languages;
-        for (const code in languages) {
+        // -------- SYNCOLOGY: Restrict Supported Languages ------- //
+        const allowedLanguages = ['en', 'ar'];
+        const filteredLanguages = Object.keys(languages)
+            .filter((code) => allowedLanguages.includes(code))
+            .reduce((obj, code) => {
+                obj[code] = languages[code];
+
+                return obj;
+            }, {} as Record<string, string>);
+        for (const code in filteredLanguages) {
+        // ------------- SYNCOLOGY: end ------------//
             this.languages.push({
                 code: code,
                 name: languages[code],
@@ -111,7 +121,9 @@ export default class CoreSettingsGeneralPage {
 
         this.debugDisplay = await CoreConfig.get(CoreConstants.SETTINGS_DEBUG_DISPLAY, false);
 
-        this.analyticsAvailable = await CoreAnalytics.isAnalyticsAvailable();
+        // -------- SYNCOLOGY: Disable Analytics ------- //
+        this.analyticsAvailable = /* await CoreAnalytics.isAnalyticsAvailable();*/ false;
+        // ------------- SYNCOLOGY: end ------------//
         if (this.analyticsAvailable) {
             this.analyticsEnabled = await CoreConfig.get(CoreConstants.SETTINGS_ANALYTICS_ENABLED, true);
         }

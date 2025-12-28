@@ -104,6 +104,12 @@ const mainMenuHomeChildrenRoutes: Routes = [
         path: CORE_COURSES_DASHBOARD_PAGE_NAME,
         loadComponent: () => import('@features/courses/pages/dashboard/dashboard'),
     },
+    // -------- SYNCOLOGY: Child Detail Route ------- //
+    {
+        path: 'childdetail',
+        loadComponent: () => import('@features/courses/pages/childdetail/childdetail'),
+    },
+    // ------------- SYNCOLOGY: end ------------//
 ];
 
 const routes: Routes = [

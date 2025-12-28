@@ -68,5 +68,7 @@ export class CoreCourseSectionComponent implements OnInit {
 
 export type CoreCourseSectionToDisplay = CoreCourseSection & {
     highlighted?: boolean;
-    expanded?: boolean; // The aim of this property is to avoid DOM overloading.
+    // -------- SYNCOLOGY: Subsection Property ------- //
+    isSubSection?: boolean; // Legacy plugin support: marks section as a subsection
+    // ------------- SYNCOLOGY: end ------------//
 };

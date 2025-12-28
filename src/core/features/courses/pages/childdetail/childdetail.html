@@ -1,0 +1,49 @@
+<ion-header>
+    <ion-toolbar>
+        <ion-buttons slot="start">
+            <ion-back-button [text]="'core.back' | translate" />
+        </ion-buttons>
+        <ion-title>{{ child.child_name }}</ion-title>
+    </ion-toolbar>
+</ion-header>
+
+<ion-content>
+    <ion-card>
+        <ion-grid>
+            <ion-row class="ion-text-center">
+                <ion-col>
+                    <ion-avatar style="margin:auto;">
+                        <img style="border-radius:50%;" alt="Silhouette of a person's head" [src]="child.child_image_url" />
+                    </ion-avatar>
+                </ion-col>
+            </ion-row>
+            <ion-row class="ion-text-center" style="border-bottom:2px solid #A6A6A6">
+                <ion-col>
+                    <div class="ion-text-center">{{ child.child_name }}</div>
+                    <div class="ion-text-center">{{ child.child_email }}</div>
+                </ion-col>
+            </ion-row>
+            <ion-row class="ion-text-center">
+                <ion-col>
+                    <div style="display: flex; flex-direction: row; justify-content: center; align-items: center;">
+                        <a [href]="child.child_reportlink" style="text-decoration: none;">Report</a>
+                    </div>
+                </ion-col>
+            </ion-row>
+        </ion-grid>
+    </ion-card>
+
+    <core-loading [hideUntil]="loaded">
+        @if (hasMainBlocks) {
+            <ion-list class="list-item-limited-width">
+                @if (block.visible && block.name) {
+                    <core-block [block]="block" contextLevel="user" [instanceId]="child.child_id" [child]="child" />
+                }
+            </ion-list>
+        }
+
+        @if (!hasMainBlocks) {
+            <core-empty-box icon="fas-cubes" [message]="'core.course.nocontentavailable' | translate" />
+        }
+    </core-loading>
+</ion-content>

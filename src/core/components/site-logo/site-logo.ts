@@ -23,6 +23,9 @@ import { CoreConstants } from '@/core/constants';
 import { CoreBaseModule } from '@/core/base.module';
 import { CoreExternalContentDirective } from '@directives/external-content';
 import { CoreFormatTextDirective } from '@directives/format-text';
+// -------- SYNCOLOGY: Client Configuration ------- //
+import { siteImage } from '@/syncology/configs';
+// ------------- SYNCOLOGY: end ------------//
 
 /**
  * Component to render the current site logo.
@@ -66,7 +69,10 @@ export class CoreSiteLogoComponent implements OnInit, OnDestroy {
             await this.loadInfo();
         }, this.siteId);
 
-        this.fallbackLogo = this.logoType === 'top' ? 'assets/img/top_logo.png' : 'assets/img/login_logo.png';
+        // -------- SYNCOLOGY: Client Logo Configuration ------- //
+        // this.fallbackLogo = this.logoType === 'top' ? 'assets/img/top_logo.png' : 'assets/img/login_logo.png';
+        this.fallbackLogo = siteImage;
+        // ------------- SYNCOLOGY: end ------------//
         this.showSiteName = this.logoType !== 'top';
 
         await this.loadInfo();

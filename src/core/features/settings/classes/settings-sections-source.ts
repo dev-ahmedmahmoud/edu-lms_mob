@@ -54,11 +54,13 @@ export class CoreSettingsSectionsSource extends CoreRoutedItemsManagerSource<Cor
             });
         }
 
-        sections.push({
-            name: 'core.settings.about',
-            path: 'about',
-            icon: 'fas-id-card',
-        });
+        // -------- SYNCOLOGY: Hide About Section ------- //
+        // sections.push({
+        //     name: 'core.settings.about',
+        //     path: 'about',
+        //     icon: 'fas-id-card',
+        // });
+        // ------------- SYNCOLOGY: end ------------//
 
         return { items: sections };
     }

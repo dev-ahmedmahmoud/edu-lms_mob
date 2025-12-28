@@ -1226,12 +1226,15 @@ export class CoreSitesProvider {
 
         this.currentSite = site;
 
+        // -------- SYNCOLOGY: Seamless Account Switching Support ------- //
+        // Disabled original behavior that would trigger SESSION_EXPIRED for logged out sites.
+        // Instead, we clear the loggedOut flag to enable seamless account switching.
+        // The existing token will be used - if it's invalid, the server will return an error.
         if (site.isLoggedOut()) {
-            // Logged out, trigger session expired event and stop.
-            CoreEvents.trigger(CoreEvents.SESSION_EXPIRED, redirectData || {}, site.getId());
-
-            return false;
+            // Clear the logged out status to allow seamless switching
+            await this.setSiteLoggedOut(siteId, false);
         }
+        // ------------- SYNCOLOGY: end ------------//
 
         this.login(siteId);
         // Get some data in background, don't block the UI.
@@ -1711,9 +1714,16 @@ export class CoreSitesProvider {
         this.isLoginNavigationFinished = false;
         this.afterLoginNavigationQueue = [];
 
-        if (options.forceLogout || (siteConfig && siteConfig.tool_mobile_forcelogout === '1')) {
+        // -------- SYNCOLOGY: Override Server Force Logout ------- //
+        // Modified condition to allow explicit forceLogout: false to override server setting.
+        // This enables seamless account switching even when server has tool_mobile_forcelogout enabled.
+        const shouldLogOut = options.forceLogout === true ||
+            (options.forceLogout !== false && siteConfig && siteConfig.tool_mobile_forcelogout === '1');
+
+        if (shouldLogOut) {
             promises.push(this.setSiteLoggedOut(siteId));
         }
+        // ------------- SYNCOLOGY: end ------------//
 
         promises.push(this.removeStoredCurrentSite());
 

@@ -2273,6 +2273,9 @@ export const CoreCourseHelper = makeSingleton(CoreCourseHelperProvider);
 export type CoreCourseSection = Omit<CoreCourseWSSection, 'contents'> & {
     hasContent?: boolean;
     contents: (CoreCourseModuleData | CoreCourseSection)[];
+    // -------- SYNCOLOGY: Helper Property for UI ------- //
+    expanded?: boolean; // The aim of this property is to avoid DOM overloading.
+    // ------------- SYNCOLOGY: end ------------//
 };
 
 /**

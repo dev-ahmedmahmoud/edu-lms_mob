@@ -1,12 +1,14 @@
 <ion-header>
     <ion-toolbar>
-        <ion-buttons slot="start">
+        <!-- -------- SYNCOLOGY: Hide Back Button and title ------- -->
+        <!-- <ion-buttons slot="start">
             <ion-back-button [text]="'core.back' | translate" />
-        </ion-buttons>
+        </ion-buttons> -->
 
-        <ion-title>
+        <!-- <ion-title>
             <h1>{{ 'core.login.connecttomoodle' | translate }}</h1>
-        </ion-title>
+        </ion-title> -->
+        <!-- ------------- SYNCOLOGY: end ------------ -->
 
         <ion-buttons slot="end">
             <ion-button fill="clear" (click)="openSettings()" [ariaLabel]="'core.settings.appsettings' | translate">
@@ -18,11 +20,15 @@
 <ion-content class="ion-padding">
     <div class="list-item-limited-width">
         <div class="ion-text-center ion-padding ion-margin-bottom core-login-site-logo" [class.hidden]="hasSites || enteredSiteUrl">
-            <img src="assets/img/login_logo.png" class="avatar-full login-logo" [alt]="'core.login.logoof' | translate: { $a: appName }">
+            <!-- -------- SYNCOLOGY: Brand image ------- -->
+            <img [src]="siteImage" class="avatar-full login-logo" [alt]="'core.login.logoof' | translate: { $a: appName }">
+            <!-- -------- SYNCOLOGY: end ------- -->
         </div>
+        <!-- -------- SYNCOLOGY: Disable Manual Site Input ------- -->
+        <!--
         @if (!fixedSites && siteForm) {
             <form [formGroup]="siteForm" (ngSubmit)="connect(siteForm.value.siteUrl, $event)" #siteFormEl>
-                <!-- Form to input the site URL if there are no fixed sites. -->
+                <!- - Form to input the site URL if there are no fixed sites. - ->
                 @if (siteSelector === 'url') {
 
                     <ion-item lines="inset">
@@ -89,17 +95,21 @@
                 }
             </form>
         }
+        -->
+        <!-- ------------- SYNCOLOGY: end ------------ -->
 
         @if (fixedSites) {
 
             <!-- Pick the site from a list of fixed sites. -->
             @if (siteSelector === 'list') {
                 <ion-list>
-                    <ion-item>
+                    <!-- ------------- SYNCOLOGY: Hide Select Site Title ------------ -->
+                    <!-- <ion-item>
                         <ion-label>
                             <h2 class="item-heading">{{ 'core.login.selectsite' | translate }}</h2>
                         </ion-label>
-                    </ion-item>
+                    </ion-item> -->
+                    <!-- ------------- SYNCOLOGY: end ------------ -->
                     @if (fixedSites.length > 4) {
                         <ion-searchbar [(ngModel)]="filter" (ionInput)="filterChanged($event)" (ionCancel)="filterChanged()"
                             [placeholder]="'core.login.findyoursite' | translate" />
@@ -112,6 +122,8 @@
 
         }
 
+        <!-- -------- SYNCOLOGY: Hide QR Code and Help ------- -->
+        <!--
         @if (showScanQR && !hasSites && !enteredSiteUrl) {
 
             <div class="ion-text-center ion-padding ion-margin-top core-login-site-qrcode-separator">{{ 'core.login.or' | translate }}
@@ -124,11 +136,13 @@
 
         }
 
-        <!-- Help. -->
+        <!- Help. --=>
         <ion-button class="ion-margin-top core-login-need-help core-button-as-link ion-text-wrap" (click)="showHelp()"
             aria-haspopup="dialog" expand="block" fill="clear">
             {{ 'core.needhelp' | translate }}
         </ion-button>
+        -->
+        <!-- ------------- SYNCOLOGY: end ------------ -->
     </div>
 </ion-content>
 
@@ -149,12 +163,14 @@
             @if (site.title) {
                 <p class="item-heading ion-text-wrap">{{site.title}}</p>
             }
-            @if (displaySiteUrl(site.url)) {
+            <!-- -------- SYNCOLOGY: Clean Site List Item ------- -->
+            <!-- @if (displaySiteUrl(site.url)) {
                 <p>{{site.noProtocolUrl}}</p>
-            }
-            @if (site.location) {
+            } -->
+            <!-- @if (site.location) {
                 <p>{{site.location}}</p>
-            }
+            } -->
+            <!-- ------------- SYNCOLOGY: end ------------ -->
         </ion-label>
     </ion-item>
 </ng-template>

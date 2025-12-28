@@ -21,6 +21,11 @@ import type { ICoreBlockComponent } from '@features/block/classes/base-block-com
 import { ContextLevel } from '@/core/constants';
 import { CoreSharedModule } from '@/core/shared.module';
 
+// -------- SYNCOLOGY: Child Import ------- //
+import { Child } from '@features/courses/services/child-courses';
+// ------------- SYNCOLOGY: end ------------//
+
+
 /**
  * Component to render a block.
  */
@@ -40,6 +45,9 @@ export class CoreBlockComponent implements OnDestroy {
     readonly contextLevel = input.required<ContextLevel>(); // The context where the block will be used.
     readonly instanceId = input.required<number>(); // The instance ID associated with the context level.
     readonly labelledBy = input<string>();
+    // -------- SYNCOLOGY: Child Input ------- //
+    readonly child = input<Child>(); // override user ID with specific student ID.
+    // ------------- SYNCOLOGY: end ------------//
 
     /**
      * @deprecated since 5.1. Not used anymore.
@@ -99,6 +107,9 @@ export class CoreBlockComponent implements OnDestroy {
                     link: data.link || null,
                     linkParams: data.linkParams || null,
                     navOptions: data.navOptions || null,
+                    // -------- SYNCOLOGY: Pass Child to Block ------- //
+                    ...(this.child() && { child: this.child() }),
+                    // ------------- SYNCOLOGY: end ------------//
                 },
                 data.componentData ?? {},
             ));

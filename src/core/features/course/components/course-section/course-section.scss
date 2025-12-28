@@ -14,9 +14,10 @@
         }
     }
 
+    // -------- SYNCOLOGY: Collapsible Section Styles ------- //
     &.collapsible {
         .core-course-module-list-wrapper {
-            border: var(--ion-card-border-width) solid var(--ion-card-border-color);
+            border: var(--ion-card-border-width) solid var(--primary);
             border-radius: var(--ion-card-radius);
             margin: var(--mdl-spacing-4);
             width: calc(100% - var(--mdl-spacing-8));
@@ -39,4 +40,5 @@
     core-course-module:first-child ::ng-deep ion-card {
         margin-top: 0px;
     }
+    // ------------- SYNCOLOGY: end ------------//
 }
