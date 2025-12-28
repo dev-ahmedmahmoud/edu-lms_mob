@@ -22,7 +22,19 @@
         const src = getQueryParam('src');
         if (src) {
             const iframe = document.createElement('iframe');
-            iframe.src = src;
+
+            // CRITICAL: Strip the App's custom scheme referer (moodleappfs://)
+            iframe.setAttribute('referrerPolicy', 'no-referrer');
+
+            // Append explicit origin to satisfy API if missing
+            let safeSrc = src;
+            if (safeSrc.indexOf('origin=') === -1) {
+                const separator = safeSrc.indexOf('?') !== -1 ? '&' : '?';
+                // Use https://www.youtube.com as origin to match the domain
+                safeSrc = safeSrc + separator + 'origin=https://www.youtube.com';
+            }
+
+            iframe.src = safeSrc;
             iframe.allow = "autoplay; encrypted-media; fullscreen; picture-in-picture";
             iframe.allowFullscreen = true;
             iframe.setAttribute('playsinline', '1');
