@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "122382073044",
+    "firebase_url": "https://edusync-b2086.firebaseio.com",
+    "project_id": "edusync-b2086",
+    "storage_bucket": "edusync-b2086.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:122382073044:android:4090ea976bf25c0e960f41",
+        "android_client_info": {
+          "package_name": "com.pioneers.edusync"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "122382073044-tk5ermc1ou231m2kcnigrlaecv29lr6i.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.pioneers.edusync",
+            "certificate_hash": "ae9d0aebe9ead1f764ba1fcba5fd40018c382b6f"
+          }
+        },
+        {
+          "client_id": "122382073044-blpaka7tln22dsvp1fgpvvbj9j3la41b.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB_846ev1pMQwYODHFs4pxrb0_tXwybBVM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "122382073044-blpaka7tln22dsvp1fgpvvbj9j3la41b.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

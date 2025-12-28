@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "458963196805",
+    "firebase_url": "https://tanta-modern-school.firebaseio.com",
+    "project_id": "tanta-modern-school",
+    "storage_bucket": "tanta-modern-school.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:458963196805:android:cee9ab482bb0cdfa0582ec",
+        "android_client_info": {
+          "package_name": "com.tmsegypt.edusync"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "458963196805-seb85u3j7rd393hvsq8an4oo0288qmuq.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.tmsegypt.edusync",
+            "certificate_hash": "ae9d0aebe9ead1f764ba1fcba5fd40018c382b6f"
+          }
+        },
+        {
+          "client_id": "458963196805-3d66qr7uacpmqhgng56efo47d162qq78.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAeMq4QAJmrbgrJbaub50qsYhCDVXeOv6s"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "458963196805-3d66qr7uacpmqhgng56efo47d162qq78.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

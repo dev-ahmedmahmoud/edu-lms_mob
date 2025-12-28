@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "503567208790",
+    "project_id": "tanta-royal-school",
+    "storage_bucket": "tanta-royal-school.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:503567208790:android:00a24f8116b886af1b86f7",
+        "android_client_info": {
+          "package_name": "com.royal.edusync"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB5kugGrT-zvHCbySBCzf488H4Uw95K14w"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

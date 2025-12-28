@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CLIENT_ID</key>
+	<string>122382073044-o8g97gmmknpbqlgoc1746sob66qj67ja.apps.googleusercontent.com</string>
+	<key>REVERSED_CLIENT_ID</key>
+	<string>com.googleusercontent.apps.122382073044-o8g97gmmknpbqlgoc1746sob66qj67ja</string>
+	<key>ANDROID_CLIENT_ID</key>
+	<string>122382073044-tk5ermc1ou231m2kcnigrlaecv29lr6i.apps.googleusercontent.com</string>
+	<key>API_KEY</key>
+	<string>AIzaSyCqRCJIyIafxOsjNh7SrOjmZF7_FVsgkHw</string>
+	<key>GCM_SENDER_ID</key>
+	<string>122382073044</string>
+	<key>PLIST_VERSION</key>
+	<string>1</string>
+	<key>BUNDLE_ID</key>
+	<string>com.pioneers.edusync</string>
+	<key>PROJECT_ID</key>
+	<string>edusync-b2086</string>
+	<key>STORAGE_BUCKET</key>
+	<string>edusync-b2086.appspot.com</string>
+	<key>IS_ADS_ENABLED</key>
+	<false></false>
+	<key>IS_ANALYTICS_ENABLED</key>
+	<false></false>
+	<key>IS_APPINVITE_ENABLED</key>
+	<true></true>
+	<key>IS_GCM_ENABLED</key>
+	<true></true>
+	<key>IS_SIGNIN_ENABLED</key>
+	<true></true>
+	<key>GOOGLE_APP_ID</key>
+	<string>1:122382073044:ios:422922a2e5370afb960f41</string>
+	<key>DATABASE_URL</key>
+	<string>https://edusync-b2086.firebaseio.com</string>
+</dict>
+</plist>
