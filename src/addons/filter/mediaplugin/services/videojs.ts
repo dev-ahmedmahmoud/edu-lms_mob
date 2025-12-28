@@ -116,12 +116,12 @@ export class AddonFilterMediaPluginVideoJSService {
         }
 
         const iframe = document.createElement('iframe');
-        iframe.id = video.id;
-        iframe.src = CoreSites.getCurrentSite()?.fixRefererForUrl(youtubeUrl) || youtubeUrl;
-        iframe.setAttribute('frameborder', '0');
-        iframe.setAttribute('allowfullscreen', '1');
-        iframe.width = '100%';
-        iframe.height = '300';
+        // iframe.id = video.id;
+        // iframe.src = CoreSites.getCurrentSite()?.fixRefererForUrl(youtubeUrl) || youtubeUrl;
+        // iframe.setAttribute('frameborder', '0');
+        // iframe.setAttribute('allowfullscreen', '1');
+        // iframe.width = '100%';
+        // iframe.height = '300';
 
         // Replace video tag by the iframe.
         video.parentNode?.replaceChild(iframe, video);
