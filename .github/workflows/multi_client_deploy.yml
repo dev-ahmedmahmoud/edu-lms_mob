@@ -90,6 +90,7 @@ jobs:
     strategy:
       matrix:
         client: ${{fromJson(needs.setup-matrix.outputs.matrix)}}
+        platform: ["ios"]
       fail-fast: false
 
     steps:
@@ -105,7 +106,7 @@ jobs:
         run: npm install -g @ionic/cli cordova cordova-res
 
       - name: Apply Client Configuration
-        run: node scripts/apply_client_config.js --client-id ${{ matrix.client }}
+        run: node scripts/apply_client_config.js --client-id ${{ matrix.client }} --platform ${{ matrix.platform }}
 
       - name: Patch iOS Source
         run: node scripts/patch_ios_source.js
@@ -184,6 +185,7 @@ jobs:
     strategy:
       matrix:
         client: ${{fromJson(needs.setup-matrix.outputs.matrix)}}
+        platform: ["android"]
       fail-fast: false
 
     steps:
@@ -211,7 +213,7 @@ jobs:
         run: npm install -g @ionic/cli cordova cordova-res
 
       - name: Apply Client Configuration
-        run: node scripts/apply_client_config.js --client-id ${{ matrix.client }}
+        run: node scripts/apply_client_config.js --client-id ${{ matrix.client }} --platform ${{ matrix.platform }}
 
       - name: Decode Android Keystore & Config
         env:

@@ -5,6 +5,9 @@ const path = require('path');
 const args = process.argv.slice(2);
 const clientIdIndex = args.indexOf('--client-id');
 
+const platformIndex = args.indexOf('--platform');
+const platform = (platformIndex !== -1 && platformIndex + 1 < args.length) ? args[platformIndex + 1] : 'android'; // Default to android
+
 if (clientIdIndex === -1 || clientIdIndex + 1 >= args.length) {
     console.error('Usage: node scripts/apply_client_config.js --client-id <client_id>');
     process.exit(1);
@@ -35,27 +38,15 @@ let configXml = fs.readFileSync(configXmlPath, 'utf8');
 
 // Update Widget ID (Android & iOS)
 // Note: This regex assumes standard Cordova config.xml formatting
-configXml = configXml.replace(/id="[^"]*"/, `id="${client.appId.android}"`); // Main package ID matches Android usually
-
-// Specific iOS Bundle ID override (if platform specific settings exist or we inject them)
-// Cordova uses the widget id='' as the default bundle id.
-// If Android and iOS IDs differ, we must ensure iOS uses its own.
-// We can use the 'ios-CFBundleIdentifier' attribute on the widget tag if Cordova supports it (standard is usually just 'id').
-// OR more reliably, we replace it in the platform-specific section OR we rely on the fact that we just set 'id' to android one.
-// user says: "iOS is now using Android package name" -> because we set id="..." to android package name above.
-
-// To support different IDs, we need to handle it.
-// Cordova allows `ios-CFBundleIdentifier` on the <widget> tag.
-if (client.appId.ios && client.appId.ios !== client.appId.android) {
-     console.log(`Setting ios-CFBundleIdentifier to ${client.appId.ios}`);
-     // Check if ios-CFBundleIdentifier exists, if so replace, if not add it.
-     if (configXml.includes('ios-CFBundleIdentifier')) {
-        configXml = configXml.replace(/ios-CFBundleIdentifier="[^"]*"/, `ios-CFBundleIdentifier="${client.appId.ios}"`);
-     } else {
-        // Add it to the widget tag
-        configXml = configXml.replace(/<widget /, `<widget ios-CFBundleIdentifier="${client.appId.ios}" `);
-     }
+if (platform === 'ios' && client.appId.ios) {
+    console.log(`Setting config.xml widget id to iOS Bundle ID: ${client.appId.ios}`);
+    configXml = configXml.replace(/id="[^"]*"/, `id="${client.appId.ios}"`);
+} else {
+    console.log(`Setting config.xml widget id to Android Package Name: ${client.appId.android}`);
+    configXml = configXml.replace(/id="[^"]*"/, `id="${client.appId.android}"`);
 }
+
+// Previous logic for ios-CFBundleIdentifier is no longer needed since we set the main ID per platform.
 
 // Update Version
 if (client.version) {
@@ -79,6 +70,28 @@ configXml = configXml.replace(/<name>[^<]*<\/name>/, `<name>${client.name}</name
 // Write config.xml
 fs.writeFileSync(configXmlPath, configXml, 'utf8');
 console.log('Updated config.xml');
+
+// 1.1 Update moodle.config.json
+const moodleConfigPath = path.join(projectRoot, 'moodle.config.json');
+if (fs.existsSync(moodleConfigPath)) {
+    const moodleConfig = JSON.parse(fs.readFileSync(moodleConfigPath, 'utf8'));
+
+    // Update app_id based on platform
+    if (platform === 'ios' && client.appId.ios) {
+        moodleConfig.app_id = client.appId.ios;
+        console.log(`Setting app_id to iOS Bundle ID: ${client.appId.ios}`);
+    } else {
+        moodleConfig.app_id = client.appId.android;
+        console.log(`Setting app_id to Android Package Name: ${client.appId.android}`);
+    }
+
+    moodleConfig.appname = client.name;
+
+    fs.writeFileSync(moodleConfigPath, JSON.stringify(moodleConfig, null, 4), 'utf8');
+    console.log(`Updated moodle.config.json for platform: ${platform}`);
+} else {
+    console.warn('Warning: moodle.config.json not found, skipping update.');
+}
 
 // 2. Generate src/syncology/configs.ts
 const tsConfigPath = path.join(projectRoot, 'src', 'syncology', 'configs.ts');
