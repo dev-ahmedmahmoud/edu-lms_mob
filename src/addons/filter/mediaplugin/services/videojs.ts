@@ -117,13 +117,33 @@ export class AddonFilterMediaPluginVideoJSService {
 
         const iframe = document.createElement('iframe');
         iframe.id = video.id;
-        iframe.src = CoreSites.getCurrentSite()?.fixRefererForUrl(youtubeUrl) || youtubeUrl;
-        iframe.setAttribute('frameborder', '0');
-        iframe.setAttribute('allowfullscreen', '1');
-        iframe.setAttribute('referrerPolicy', 'no-referrer');
-        iframe.setAttribute('playsinline', '1');
         iframe.width = '100%';
         iframe.height = '300';
+        iframe.setAttribute('frameborder', '0');
+        iframe.setAttribute('allowfullscreen', '1');
+        iframe.setAttribute('playsinline', '1');
+
+        const innerHtml = `
+            <!DOCTYPE html>
+            <html>
+            <head>
+                <style>body, html { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; }</style>
+            </head>
+            <body>
+                <iframe
+                    src="${youtubeUrl}"
+                    width="100%"
+                    height="100%"
+                    frameborder="0"
+                    allow="autoplay; encrypted-media; fullscreen; picture-in-picture"
+                    allowfullscreen
+                    style="display:block;"
+                ></iframe>
+            </body>
+            </html>
+        `;
+
+        iframe.srcdoc = innerHtml;
 
         // Replace video tag by the iframe.
         video.parentNode?.replaceChild(iframe, video);
