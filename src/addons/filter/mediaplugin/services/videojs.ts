@@ -100,13 +100,16 @@ export class AddonFilterMediaPluginVideoJSService {
      * @param video Video element.
      */
     treatYoutubeVideos(video: HTMLElement): void {
-        if (!video.classList.contains('video-js')) {
-            return;
-        }
-
         const dataSetupString = video.getAttribute('data-setup') || video.getAttribute('data-setup-lazy') || '{}';
         const data = CoreText.parseJSON<VideoJSOptions>(dataSetupString, {});
-        const youtubeUrl = data.techOrder?.[0] == 'youtube' && CoreUrl.getYoutubeEmbedUrl(data.sources?.[0]?.src);
+        let youtubeUrl = data.techOrder?.[0] == 'youtube' && CoreUrl.getYoutubeEmbedUrl(data.sources?.[0]?.src);
+
+        if (!youtubeUrl) {
+             const src = video.getAttribute('src') || video.querySelector('source')?.getAttribute('src');
+             if (src) {
+                 youtubeUrl = CoreUrl.getYoutubeEmbedUrl(src);
+             }
+        }
 
         if (!youtubeUrl) {
             return;
