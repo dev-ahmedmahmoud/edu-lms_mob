@@ -126,8 +126,12 @@ export class AddonFilterMediaPluginVideoJSService {
         // Ensure we are using standard youtube.com
         youtubeUrl = youtubeUrl.replace('youtube-nocookie.com', 'youtube.com');
 
+        // FORCE absolute local path to bypass any <base> tag pointing to remote
+        // Use window.location.origin which is typically ionic://localhost or app://localhost on iOS
+        const localPath = window.location.origin + '/assets/youtube_embed.html';
+
         // Point to local proxy asset
-        iframe.src = 'assets/youtube_embed.html?src=' + encodeURIComponent(youtubeUrl);
+        iframe.src = localPath + '?src=' + encodeURIComponent(youtubeUrl);
 
         // Replace video tag by the iframe.
         video.parentNode?.replaceChild(iframe, video);
