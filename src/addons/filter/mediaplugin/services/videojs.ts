@@ -117,12 +117,16 @@ export class AddonFilterMediaPluginVideoJSService {
 
         youtubeUrl = youtubeUrl.replace('youtube.com', 'youtube-nocookie.com');
 
+        // Add origin to enable API access in restricted environments (iOS)
+        const separator = youtubeUrl.indexOf('?') !== -1 ? '&' : '?';
+        youtubeUrl = `${youtubeUrl}${separator}origin=${encodeURIComponent(window.location.origin)}`;
+
         const iframe = document.createElement('iframe');
         iframe.id = video.id;
         iframe.src = CoreSites.getCurrentSite()?.fixRefererForUrl(youtubeUrl) || youtubeUrl;
         iframe.setAttribute('frameborder', '0');
         iframe.setAttribute('allowfullscreen', '1');
-        iframe.setAttribute('referrerPolicy', 'no-referrer');
+        iframe.setAttribute('referrerPolicy', 'strict-origin-when-cross-origin');
         iframe.width = '100%';
         iframe.height = '300';
 
