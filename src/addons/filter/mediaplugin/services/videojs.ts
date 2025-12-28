@@ -115,15 +115,22 @@ export class AddonFilterMediaPluginVideoJSService {
             return;
         }
 
-        const objectTag = document.createElement('object');
-        objectTag.id = video.id;
-        objectTag.width = '100%';
-        objectTag.height = '300';
-        objectTag.setAttribute('type', 'text/html');
-        objectTag.setAttribute('data', CoreSites.getCurrentSite()?.fixRefererForUrl(youtubeUrl) || youtubeUrl);
+        const iframe = document.createElement('iframe');
+        iframe.id = video.id;
+        iframe.width = '100%';
+        iframe.height = '300';
+        iframe.setAttribute('frameborder', '0');
+        iframe.setAttribute('allowfullscreen', '1');
+        iframe.setAttribute('playsinline', '1');
 
-        // Replace video tag by the object tag.
-        video.parentNode?.replaceChild(objectTag, video);
+        // Ensure we are using standard youtube.com
+        youtubeUrl = youtubeUrl.replace('youtube-nocookie.com', 'youtube.com');
+
+        // Point to local proxy asset
+        iframe.src = 'assets/youtube_embed.html?src=' + encodeURIComponent(youtubeUrl);
+
+        // Replace video tag by the iframe.
+        video.parentNode?.replaceChild(iframe, video);
     }
 
     /**
