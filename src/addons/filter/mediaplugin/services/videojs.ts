@@ -129,11 +129,21 @@ export class AddonFilterMediaPluginVideoJSService {
         const videoIdMatch = youtubeUrl.match(/\/embed\/([^?#]+)/);
         const videoId = videoIdMatch ? videoIdMatch[1] : '';
 
-        // FORCE absolute local path to bypass any <base> tag pointing to remote
-        const localPath = window.location.origin + '/assets/youtube_embed.html';
+        // --- REMOTE PROXY CONFIGURATION ---
+        // TODO: REPLACE THIS WITH YOUR DEPLOYED CLOUDFLARE PAGES URL
+        const REMOTE_PROXY_URL = 'https://rapid-rain-8a3b.a-samyabdelhay.workers.dev';
+        // ----------------------------------
 
-        // Point to local proxy asset with 'v' parameter
-        iframe.src = localPath + '?v=' + encodeURIComponent(videoId) + '&playsinline=1';
+        // Point to remote proxy
+        if (REMOTE_PROXY_URL && REMOTE_PROXY_URL.includes('workers.dev')) {
+             iframe.src = REMOTE_PROXY_URL + '?v=' + encodeURIComponent(videoId) + '&playsinline=1';
+        } else {
+             // Fallback/Warning if URL is not set (loops back to local or shows error)
+             // utilizing the local asset as a fallback for now, though likely to fail based on previous attempts
+             const localPath = window.location.origin + '/assets/youtube_embed.html';
+             iframe.src = localPath + '?v=' + encodeURIComponent(videoId) + '&playsinline=1';
+             console.warn('YouTube Remote Proxy URL not set. Using local fallback (may fail on iOS).');
+        }
 
         // Replace video tag by the iframe.
         video.parentNode?.replaceChild(iframe, video);
