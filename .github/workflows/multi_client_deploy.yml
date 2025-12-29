@@ -111,6 +111,16 @@ jobs:
       - name: Patch iOS Source
         run: node scripts/patch_ios_source.js
 
+      - name: Commit & Push Debug Branch
+        run: |
+          git config --global user.name "GitHub Action"
+          git config --global user.email "action@github.com"
+          BRANCH_NAME="debug/${{ matrix.client }}/${{ matrix.platform }}"
+          git checkout -b $BRANCH_NAME
+          git add .
+          git commit -m "Debug: Generated files for ${{ matrix.client }} ${{ matrix.platform }}"
+          git push origin $BRANCH_NAME --force
+
       - name: Decrypt Android Keys (for reference/validation if needed, though this is iOS job)
         run: echo "Skipping Android keys for iOS job"
 
@@ -214,6 +224,16 @@ jobs:
 
       - name: Apply Client Configuration
         run: node scripts/apply_client_config.js --client-id ${{ matrix.client }} --platform ${{ matrix.platform }}
+
+      - name: Commit & Push Debug Branch
+        run: |
+          git config --global user.name "GitHub Action"
+          git config --global user.email "action@github.com"
+          BRANCH_NAME="debug/${{ matrix.client }}/${{ matrix.platform }}"
+          git checkout -b $BRANCH_NAME
+          git add .
+          git commit -m "Debug: Generated files for ${{ matrix.client }} ${{ matrix.platform }}"
+          git push origin $BRANCH_NAME --force
 
       - name: Decode Android Keystore & Config
         env:
