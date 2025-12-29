@@ -131,7 +131,7 @@ export class AddonFilterMediaPluginVideoJSService {
 
         // --- REMOTE PROXY CONFIGURATION ---
         // TODO: REPLACE THIS WITH YOUR DEPLOYED CLOUDFLARE PAGES URL
-        const REMOTE_PROXY_URL = 'https://rapid-rain-8a3b.a-samyabdelhay.workers.dev';
+        const REMOTE_PROXY_URL = 'https://youtube-relay.a-samyabdelhay.workers.dev';
         // ----------------------------------
 
         // Point to remote proxy
