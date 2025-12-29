@@ -123,15 +123,17 @@ export class AddonFilterMediaPluginVideoJSService {
         iframe.setAttribute('allowfullscreen', '1');
         iframe.setAttribute('playsinline', '1');
 
-        // Ensure we are using standard youtube.com
-        youtubeUrl = youtubeUrl.replace('youtube-nocookie.com', 'youtube.com');
+        // Extract Video ID from the confirmed YouTube URL
+        // CoreUrl.getYoutubeEmbedUrl returns format like https://www.youtube.com/embed/VIDEO_ID?feature=oembed
+        // a simple regex can extract the VIDEO_ID
+        const videoIdMatch = youtubeUrl.match(/\/embed\/([^?#]+)/);
+        const videoId = videoIdMatch ? videoIdMatch[1] : '';
 
         // FORCE absolute local path to bypass any <base> tag pointing to remote
-        // Use window.location.origin which is typically ionic://localhost or app://localhost on iOS
         const localPath = window.location.origin + '/assets/youtube_embed.html';
 
-        // Point to local proxy asset
-        iframe.src = localPath + '?src=' + encodeURIComponent(youtubeUrl);
+        // Point to local proxy asset with 'v' parameter
+        iframe.src = localPath + '?v=' + encodeURIComponent(videoId) + '&playsinline=1';
 
         // Replace video tag by the iframe.
         video.parentNode?.replaceChild(iframe, video);
