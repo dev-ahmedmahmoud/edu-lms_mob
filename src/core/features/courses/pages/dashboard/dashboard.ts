@@ -130,7 +130,7 @@ export default class CoreCoursesDashboardPage implements OnInit, OnDestroy {
                         const childObj: Child = {
                             child_email: jsonObj[childKey]['child_email'],
                             child_id: jsonObj[childKey]['child_id'],
-                            child_image_url:  this.checkImageUrl(jsonObj[childKey]['child_image_url']),
+                            child_image_url:  this.checkImageUrl(jsonObj[childKey]['child_image_url']) || 'assets/img/user-avatar.png',
                             child_name: jsonObj[childKey]['child_name'],
                             child_courses: '',
                             childCourses: [],

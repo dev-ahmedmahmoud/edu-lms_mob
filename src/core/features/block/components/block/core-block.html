@@ -10,26 +10,27 @@
     <ion-item-divider>
         <h2>{{ 'My Children' | translate }}</h2>
     </ion-item-divider>
-    <div class="scroll-container">
+    <div style="width: 100%; overflow-x: auto; white-space: nowrap; scrollbar-width: thin;">
         @if (block() && block().contents && block().contents!.localContents && block().contents!.localContents.children) {
             @for (child of block().contents!.localContents.children; track child) {
-                <div class="scroll-content">
-                    <ion-card class="item" (click)="child?.onChildClick(child)" style="height: 148px;">
-                        <ion-card-content>
-                            <ion-card-title />
-                            <ion-grid>
-                                <ion-row>
-
+                <div style="display: inline-block; padding: 10px;">
+                    <ion-card style="display: inline-block; width: 70vw; max-width: 450px; height: 148px;" (click)="child?.onChildClick(child)">
+                        <ion-card-content style="height: 100%;">
+                            <ion-grid style="height: 100%;">
+                                <ion-row style="height: 100%;">
                                     <ion-col size="4">
-                                        <ion-avatar>
-                                            <img style="border-radius:50%;" alt="Silhouette of a person's head"
-                                                src="{{ child.child_image_url }}" />
-                                        </ion-avatar>
+                                        <div style="height: 100%; display: flex; align-items: center;">
+                                            <ion-avatar>
+                                                <img style="border-radius:50%;" alt="Silhouette of a person's head"
+                                                    src="{{ child.child_image_url }}" />
+                                            </ion-avatar>
+                                        </div>
                                     </ion-col>
-
                                     <ion-col size="8">
-                                        <p class="childName wrap">{{ child.child_name }}</p>
-                                        <p class="childEmail wrap">{{ child.child_email }}</p>
+                                        <div style="height: 100%; display: flex; flex-direction: column; justify-content: center;">
+                                            <p style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; width: 100%; margin: 0; display: block; font-weight: bold; margin-bottom: 5px;" class="wrap">{{ child.child_name }}lkjlkgsfjdglksdjflksdjflsdkfj</p>
+                                            <p style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; width: 100%; margin: 0; display: block;" class="wrap">{{ child.child_email }}</p>
+                                        </div>
                                     </ion-col>
                                 </ion-row>
                             </ion-grid>

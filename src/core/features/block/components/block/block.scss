@@ -16,27 +16,3 @@
         --loading-inline-min-height: 60px;
     }
 }
-
-/* -------- SYNCOLOGY: Horizontal Scroll Styles ------- */
-.scroll-container {
-    width: 100%;
-    overflow-x: auto;
-    white-space: nowrap;
-    /* Optional: Add a scrollbar for visibility */
-    scrollbar-width: thin;
-}
-
-/* Styling for the content inside the scrolling container */
-.scroll-content {
-    display: inline-block;
-    /* Optional: Add some padding around the content */
-    padding: 10px;
-}
-
-/* Styling for each item inside the horizontal scrolling div */
-.item {
-    display: inline-block;
-    /* Optional: Add some spacing between items */
-    width: 70%;
-}
-/* ------------- SYNCOLOGY: end ------------ */
