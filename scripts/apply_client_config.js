@@ -78,7 +78,7 @@ if (fs.existsSync(moodleConfigPath)) {
 
     // Update app_id based on platform
     if (platform === 'ios' && client.appId.ios) {
-        moodleConfig.app_id = client.appId.ios;
+        moodleConfig.app_id = client.appId.android;
         console.log(`Setting app_id to iOS Bundle ID: ${client.appId.android}`);
     } else {
         moodleConfig.app_id = client.appId.android;
