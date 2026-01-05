@@ -13,6 +13,17 @@
 // limitations under the License.
 import { CoreLoginSiteInfoExtended } from '@features/login/pages/site/site';
 
-export const siteImage = '';
+export const siteImage = 'assets/img/tms.png';
 
-export const sites: CoreLoginSiteInfoExtended[] = [];
+export const sites: CoreLoginSiteInfoExtended[] = [
+    {
+        name: 'Tanta Modern School',
+        url: 'https://lms.samykhalil.me',
+        imageurl: 'assets/img/tms.png',
+        location: 'Tanta Modern School',
+        title: 'Tanta Modern School',
+        alias: 'TMS',
+        city: '',
+        noProtocolUrl: 'lms.samykhalil.me',
+    },
+];
