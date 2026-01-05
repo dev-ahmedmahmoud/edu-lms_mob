@@ -1,0 +1,15 @@
+current directory: /home/runner/work/edu-lms_mob/edu-lms_mob/vendor/bundle/ruby/3.0.0/gems/nkf-0.2.0/ext/nkf
+/opt/hostedtoolcache/Ruby/3.0.7/x64/bin/ruby -I /opt/hostedtoolcache/Ruby/3.0.7/x64/lib/ruby/3.0.0 -r ./siteconf20251216-2212-1ktr03.rb extconf.rb
+creating Makefile
+
+current directory: /home/runner/work/edu-lms_mob/edu-lms_mob/vendor/bundle/ruby/3.0.0/gems/nkf-0.2.0/ext/nkf
+make DESTDIR\= clean
+
+current directory: /home/runner/work/edu-lms_mob/edu-lms_mob/vendor/bundle/ruby/3.0.0/gems/nkf-0.2.0/ext/nkf
+make DESTDIR\=
+compiling nkf.c
+linking shared-object nkf.so
+
+current directory: /home/runner/work/edu-lms_mob/edu-lms_mob/vendor/bundle/ruby/3.0.0/gems/nkf-0.2.0/ext/nkf
+make DESTDIR\= install
+/usr/bin/install -c -m 0755 nkf.so ./.gem.20251216-2212-rx2n4m
