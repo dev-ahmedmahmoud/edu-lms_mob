@@ -126,7 +126,7 @@ export default class CoreCoursesDashboardPage implements OnInit, OnDestroy {
                 }
 
                 for (const childKey in jsonObj){
-                    if (Object.prototype.hasOwnProperty.call(jsonObj, childKey)) {
+                    if (Object.prototype.hasOwnProperty.call(jsonObj, childKey) && !!jsonObj[childKey]['child_id']) {
                         const childObj: Child = {
                             child_email: jsonObj[childKey]['child_email'],
                             child_id: jsonObj[childKey]['child_id'],
