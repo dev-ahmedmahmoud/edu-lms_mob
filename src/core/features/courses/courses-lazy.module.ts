@@ -46,6 +46,11 @@ function buildRoutes(injector: Injector): Routes {
             path: 'list',
             loadComponent: () => import('@features/courses/pages/list/list'),
         },
+        // -------- SYNCOLOGY: Child Detail Route ------- //
+        {
+            path: 'childdetail',
+            loadComponent: () => import('@features/courses/pages/childdetail/childdetail'),
+        },
         ...buildTabMainRoutes(injector, {
             redirectTo: 'my',
             pathMatch: 'full',

@@ -150,7 +150,7 @@ export default class CoreCoursesDashboardPage implements OnInit, OnDestroy {
 
                         childObj.child_courses = child_courses.toString();
                         childObj.onChildClick = (child: Child) => {
-                            CoreNavigator.navigate('../childdetail', { // Navigate to sibling route
+                            CoreNavigator.navigateToSitePath('/courses/childdetail', {
                                 params: { child },
                             });
                         };
