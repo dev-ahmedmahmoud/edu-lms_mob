@@ -395,6 +395,14 @@ export class CorePushNotificationsProvider {
                 CoreText.parseJSON<Record<string, string|number>>(rawData.customdata, {}) : rawData.customdata,
         });
 
+        // iOS APNS payloads often nest these critical routing properties inside customdata.
+        // Normalize the payload so all push click handlers receive a consistent data structure.
+        if (data.customdata) {
+            data.notif = data.notif ?? String(data.customdata.notif ?? '');
+            data.moodlecomponent = data.moodlecomponent ?? String(data.customdata.moodlecomponent ?? '');
+            data.name = data.name ?? String(data.customdata.name ?? '');
+        }
+
         // Fallback: If siteurl is missing but wwwroot is present (legacy or specific server config), use it.
         if (!data.siteurl && rawData.wwwroot) {
             data.siteurl = rawData.wwwroot;
