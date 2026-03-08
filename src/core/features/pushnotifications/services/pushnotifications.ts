@@ -58,6 +58,7 @@ import { CoreWait } from '@singletons/wait';
 import { MAIN_MENU_HANDLER_BADGE_UPDATED_EVENT } from '@features/mainmenu/constants';
 import { CorePromiseUtils } from '@singletons/promise-utils';
 import { CoreWSError } from '@classes/errors/wserror';
+import { CoreAlerts } from '@services/overlays/alerts';
 
 /**
  * Service to handle push notifications.
@@ -395,13 +396,11 @@ export class CorePushNotificationsProvider {
                 CoreText.parseJSON<Record<string, string|number>>(rawData.customdata, {}) : rawData.customdata,
         });
 
-        // iOS APNS payloads often nest these critical routing properties inside customdata.
-        // Normalize the payload so all push click handlers receive a consistent data structure.
-        if (data.customdata) {
-            data.notif = data.notif ?? String(data.customdata.notif ?? '');
-            data.moodlecomponent = data.moodlecomponent ?? String(data.customdata.moodlecomponent ?? '');
-            data.name = data.name ?? String(data.customdata.name ?? '');
-        }
+        // Show an alert to help debug the actual payload arriving from APNS/FCM.
+        CoreAlerts.show({
+            header: 'Push Raw Data Debug',
+            message: JSON.stringify(rawData, null, 2),
+        });
 
         // Fallback: If siteurl is missing but wwwroot is present (legacy or specific server config), use it.
         if (!data.siteurl && rawData.wwwroot) {
