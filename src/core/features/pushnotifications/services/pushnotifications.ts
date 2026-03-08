@@ -58,7 +58,6 @@ import { CoreWait } from '@singletons/wait';
 import { MAIN_MENU_HANDLER_BADGE_UPDATED_EVENT } from '@features/mainmenu/constants';
 import { CorePromiseUtils } from '@singletons/promise-utils';
 import { CoreWSError } from '@classes/errors/wserror';
-import { CoreAlerts } from '@services/overlays/alerts';
 
 /**
  * Service to handle push notifications.
@@ -396,11 +395,14 @@ export class CorePushNotificationsProvider {
                 CoreText.parseJSON<Record<string, string|number>>(rawData.customdata, {}) : rawData.customdata,
         });
 
-        // Show an alert to help debug the actual payload arriving from APNS/FCM.
-        CoreAlerts.show({
-            header: 'Push Raw Data Debug',
-            message: JSON.stringify(rawData, null, 2),
-        });
+        // Normalize legacy or alternative payload keys (e.g. from iOS FCM wrapping APNS)
+        // so all push click handlers receive a consistent data structure.
+        if (rawData.notification !== undefined && data.notif === undefined) {
+            data.notif = String(rawData.notification);
+        }
+        if (rawData.component !== undefined && data.moodlecomponent === undefined) {
+            data.moodlecomponent = String(rawData.component);
+        }
 
         // Fallback: If siteurl is missing but wwwroot is present (legacy or specific server config), use it.
         if (!data.siteurl && rawData.wwwroot) {
@@ -932,9 +934,11 @@ export type CorePushNotificationsNotificationBasicRawData = {
     foreground?: boolean; // Whether the app was in foreground.
     'image-type'?: string; // How to display the notification image.
     moodlecomponent?: string; // Moodle component that triggered the notification.
+    component?: string; // Alternative to moodlecomponent.
     name?: string; // A name to identify the type of notification.
     notId?: string; // Notification ID.
     notif?: string; // "1" if it's a notification, "0" if it's a Moodle message.
+    notification?: string; // Alternative to notif.
     site?: string; // ID of the site sending the notification.
     siteurl?: string; // URL of the site the notification is related to.
     usertoid?: string; // ID of user receiving the push.
