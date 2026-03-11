@@ -70,7 +70,7 @@ export class CoreSendMessageFormComponent {
     protected sendOnEnter = false;
 
     // -------- SYNCOLOGY: Url for calling attachment API point ------- //
-    baseApiUrl = CoreSites.getCurrentSite()?.getURL() + '/message/attachment.php';
+    baseApiUrl = CoreSites.getCurrentSite()?.getURL() + '/message/attachment-mobile.php';
     // ------------- SYNCOLOGY: end ------------//
 
     constructor() {
@@ -97,11 +97,9 @@ export class CoreSendMessageFormComponent {
         }
     }
 
-    handleSuccess(data: string | string[]): void {
+    handleSuccess(data: { files: string[] }): void {
         // response.data is an array of URLs
-        const urls = Array.isArray(data)
-            ? data
-            : [data];
+        const urls = data.files;
         const urlsText = urls.join('\n');
 
         const textarea = <HTMLInputElement>(
@@ -139,7 +137,7 @@ export class CoreSendMessageFormComponent {
         const responseElem = <HTMLInputElement>(
             document.getElementById('message-response')
         );
-        if (responseElem) {responseElem.innerHTML = '';}
+        if (responseElem) { responseElem.innerHTML = ''; }
 
         // File count check
         if (files.length > totalFileLimit) {
@@ -180,6 +178,9 @@ export class CoreSendMessageFormComponent {
                 return;
             }
             formData.append('files[]', file, file.name);
+
+            const currentSite = CoreSites.getCurrentSite();
+            formData.append('token', currentSite?.getToken() || 'unknown');
         }
 
         request.open('POST', API_ENDPOINT, true);
@@ -197,7 +198,7 @@ export class CoreSendMessageFormComponent {
                 const meterElem = <HTMLInputElement>(
                     document.getElementById('meter')
                 );
-                if (meterElem) {meterElem.style.width = percent + '%';}
+                if (meterElem) { meterElem.style.width = percent + '%'; }
             }
         });
 
@@ -206,7 +207,7 @@ export class CoreSendMessageFormComponent {
                 const meterElem = <HTMLInputElement>(
                     document.getElementById('meter')
                 );
-                if (meterElem) {meterElem.style.display = 'none';}
+                if (meterElem) { meterElem.style.display = 'none'; }
 
                 const responseElem = <HTMLInputElement>(
                     document.getElementById('message-response')
@@ -216,7 +217,7 @@ export class CoreSendMessageFormComponent {
                 if (request.status === 0) {
                     const hint = this.getStatus0Hint(API_ENDPOINT);
                     const msg = `Request failed (status 0). ${hint}`;
-                    if (responseElem) {responseElem.innerText = msg;}
+                    if (responseElem) { responseElem.innerText = msg; }
                     CoreAlerts.show({ header: 'Upload Error', message: msg });
 
                     return;
@@ -231,7 +232,7 @@ export class CoreSendMessageFormComponent {
                     response = JSON.parse(responseText);
                 } catch {
                     const msg = `Server Response (Status ${request.status}):\n${responseText || 'Empty response'}`;
-                    if (responseElem) {responseElem.innerText = msg;}
+                    if (responseElem) { responseElem.innerText = msg; }
                     CoreAlerts.show({ header: 'Upload Error', message: msg });
 
                     return;
@@ -239,10 +240,10 @@ export class CoreSendMessageFormComponent {
 
                 if (
                     request.status === 200 &&
-                    response.success &&
-                    response.data
+                    response.files &&
+                    response.files.length > 0
                 ) {
-                    this.handleSuccess(response.data);
+                    this.handleSuccess(response);
                 } else {
                     errorMsg = `Status ${request.status}: `;
 
@@ -261,10 +262,6 @@ export class CoreSendMessageFormComponent {
 
                     if (request.status !== 200) {
                         CoreAlerts.show({ header: 'Upload Error', message: errorMsg });
-                    } else {
-                        // Clean URL: strip trailing garbage after file extension (e.g., /r/n/r/n)
-                        const cleanedUrl = unknownMessage.replace(/(\.\w{3,4})\/r\/n.*$/i, '$1').trim();
-                        this.handleSuccess(cleanedUrl);
                     }
                 }
             }
@@ -274,14 +271,14 @@ export class CoreSendMessageFormComponent {
             const meterElem = <HTMLInputElement>(
                 document.getElementById('meter')
             );
-            if (meterElem) {meterElem.style.display = 'none';}
+            if (meterElem) { meterElem.style.display = 'none'; }
 
             const responseElem = <HTMLInputElement>(
                 document.getElementById('message-response')
             );
             const msg =
                 'Network error. Please check your connection and try again.';
-            if (responseElem) {responseElem.innerText = msg;}
+            if (responseElem) { responseElem.innerText = msg; }
             CoreAlerts.show({ header: 'Upload Error', message: msg });
         };
 
@@ -289,13 +286,13 @@ export class CoreSendMessageFormComponent {
             const meterElem = <HTMLInputElement>(
                 document.getElementById('meter')
             );
-            if (meterElem) {meterElem.style.display = 'none';}
+            if (meterElem) { meterElem.style.display = 'none'; }
 
             const responseElem = <HTMLInputElement>(
                 document.getElementById('message-response')
             );
             const msg = 'Upload canceled before completing.';
-            if (responseElem) {responseElem.innerText = msg;}
+            if (responseElem) { responseElem.innerText = msg; }
             CoreAlerts.show({ header: 'Upload Error', message: msg });
         };
 
@@ -303,14 +300,14 @@ export class CoreSendMessageFormComponent {
             const meterElem = <HTMLInputElement>(
                 document.getElementById('meter')
             );
-            if (meterElem) {meterElem.style.display = 'none';}
+            if (meterElem) { meterElem.style.display = 'none'; }
 
             const responseElem = <HTMLInputElement>(
                 document.getElementById('message-response')
             );
             const msg =
                 'Upload timeout. Please try again with a stable connection.';
-            if (responseElem) {responseElem.innerText = msg;}
+            if (responseElem) { responseElem.innerText = msg; }
             CoreAlerts.show({ header: 'Upload Error', message: msg });
         };
 
@@ -332,7 +329,7 @@ export class CoreSendMessageFormComponent {
                 }
             })();
 
-            if (!online) {return 'Device appears offline.';}
+            if (!online) { return 'Device appears offline.'; }
             if (isCleartext) {
                 return 'Cleartext HTTP may be blocked on Android 9+. Use HTTPS or enable ' +
                     'cleartext traffic in Network Security Config.';
