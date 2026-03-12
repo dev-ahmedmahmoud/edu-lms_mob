@@ -21,6 +21,10 @@ import {
     CoreCoursesMyCoursesUpdatedEventData,
     CoreCourseSummaryExporterData,
 } from '@features/courses/services/courses';
+// -------- SYNCOLOGY: Child Features Support ------- //
+import { Input } from '@angular/core';
+import { Child } from '@features/courses/services/child-courses';
+// ------------- SYNCOLOGY: end ------------//
 import { CoreCoursesHelper, CoreEnrolledCourseDataWithExtraInfoAndOptions } from '@features/courses/services/courses-helper';
 import { CoreCourseHelper, CorePrefetchStatusInfo } from '@features/course/services/course-helper';
 import { CoreCourseOptionsDelegate } from '@features/course/services/course-options-delegate';
@@ -61,6 +65,11 @@ const FILTER_PRIORITY: AddonBlockMyOverviewTimeFilters[] =
     ],
 })
 export class AddonBlockMyOverviewComponent extends CoreBlockBaseComponent implements OnInit, OnDestroy, OnChanges {
+
+    // -------- SYNCOLOGY: Child Features Support ------- //
+    // our field.
+    @Input() child?: Child;
+    // ------------- SYNCOLOGY: end ------------//
 
     filteredCourses: CoreEnrolledCourseDataWithExtraInfoAndOptions[] = [];
 
@@ -289,14 +298,24 @@ export class AddonBlockMyOverviewComponent extends CoreBlockBaseComponent implem
     protected async loadAllCourses(loadWatcher: PageLoadWatcher): Promise<void> {
         const showCategories = this.block.configsRecord?.displaycategories?.value === '1';
 
-        this.allCourses = await loadWatcher.watchRequest(
-            CoreCoursesHelper.getUserCoursesWithOptionsObservable({
-                sort: this.sort.selected,
-                loadCategoryNames: showCategories,
-                readingStrategy: this.isDirty ? CoreSitesReadingStrategy.PREFER_NETWORK : loadWatcher.getReadingStrategy(),
-            }),
-            (prevCourses, newCourses) => this.coursesHaveMeaningfulChanges(prevCourses, newCourses),
-        );
+        // -------- SYNCOLOGY: Child Courses Loading ------- //
+        // Load courses for the child account if present.
+        if (this.child) {
+            this.allCourses = await loadWatcher.watchRequest(
+                CoreCoursesHelper.loadCoursesExtraInfoObservable([], showCategories, {}, this.child),
+                (prevCourses, newCourses) => this.coursesHaveMeaningfulChanges(prevCourses, newCourses),
+            );
+        } else {
+            this.allCourses = await loadWatcher.watchRequest(
+                CoreCoursesHelper.getUserCoursesWithOptionsObservable({
+                    sort: this.sort.selected,
+                    loadCategoryNames: showCategories,
+                    readingStrategy: this.isDirty ? CoreSitesReadingStrategy.PREFER_NETWORK : loadWatcher.getReadingStrategy(),
+                }),
+                (prevCourses, newCourses) => this.coursesHaveMeaningfulChanges(prevCourses, newCourses),
+            );
+        }
+        // ------------- SYNCOLOGY: end ------------//
 
         this.hasCourses = this.allCourses.length > 0;
     }

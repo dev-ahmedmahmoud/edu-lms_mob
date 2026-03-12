@@ -68,6 +68,23 @@ import { CoreCourseModuleHelper } from '@features/course/services/course-module-
 import { ADDON_STORAGE_MANAGER_PAGE_NAME } from '@addons/storagemanager/constants';
 import { CoreCourseFormatDynamicComponent } from '@features/course/classes/base-course-format-component';
 
+// -------- SYNCOLOGY: Subsection Names Configuration ------- //
+/**
+ * Subsection names upon agreement with the implementation team. This can be updated upon request.
+ * This is a bad practice, but it was the only solution to handle the subsection structure from mobile app side
+ * TODO: in the future, there could be a coordination with the moodle web responsible, to add a flag to the section
+ * to mark the section as a main section or subsection
+ */
+const SUBSECTION_NAMES = [
+    'School Videos',
+    'Lesson Videos',
+    'Lesson Powerpoint',
+    'Assignments',
+    'Evaluation Corner',
+    'Games Corner',
+];
+// ------------- SYNCOLOGY: end ------------//
+
 /**
  * Component to display course contents using a certain format. If the format isn't found, use default one.
  *
@@ -148,6 +165,9 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
      * @inheritdoc
      */
     ngOnInit(): void {
+        // -------- SYNCOLOGY: Setup Sections Call ------- //
+        this.setupSections();
+        // ------------- SYNCOLOGY: end ------------//
         if (this.course === undefined) {
             CoreAlerts.showError('Course not set');
             CoreNavigator.back();
@@ -208,7 +228,7 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
             // Course has changed, try to get the components.
             this.getComponents();
 
-            this.displayCourseIndex = CoreCourseFormatDelegate.displayCourseIndex(this.course);
+            this.displayCourseIndex = false; /** CoreCourseFormatDelegate.displayCourseIndex(this.course);*/
             this.displayBlocks = CoreCourseFormatDelegate.displayBlocks(this.course);
 
             this.hasBlocks = await CoreBlockHelper.hasCourseBlocks(this.course.id);
@@ -654,6 +674,9 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
 
         refresher?.complete();
         done?.();
+        // -------- SYNCOLOGY: Setup Sections Call ------- //
+        this.setupSections();
+        // ------------- SYNCOLOGY: end ------------//
     }
 
     /**
@@ -790,18 +813,25 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
      * Initializes the expanded sections for the course.
      */
     protected async initializeExpandedSections(): Promise<void> {
+        // Always expand General section
+        const generalSection = this.sections?.find((section) => section.name === 'General');
+        if (generalSection && !this.accordionMultipleValue.includes(generalSection.id.toString())) {
+            generalSection.expanded = true;
+            this.accordionMultipleValue = [...this.accordionMultipleValue, generalSection.id.toString()];
+        }
+
         const expandedSections = await CorePromiseUtils.ignoreErrors(
             this.currentSite?.getLocalSiteConfig<string>(`${CORE_COURSE_EXPANDED_SECTIONS_PREFIX}${this.course.id}`),
         );
 
         if (expandedSections === undefined) {
-            this.accordionMultipleValue = [];
+            // this.accordionMultipleValue = [];
 
-            // Expand all sections if not defined.
-            CoreCourseHelper.flattenSections(this.sections).forEach((section) => {
-                section.expanded = true;
-                this.accordionMultipleValue.push(section.id.toString());
-            });
+            // // Expand all sections if not defined.
+            // CoreCourseHelper.flattenSections(this.sections).forEach((section) => {
+            //     section.expanded = true;
+            //     this.accordionMultipleValue.push(section.id.toString());
+            // });
 
             return;
         }
@@ -859,5 +889,67 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
             this.saveExpandedSections();
         }
     }
+
+    // -------- SYNCOLOGY: Section Organization Logic ------- //
+    /**
+     * Label main sections and sub-sections to prepare for organizing structure.
+     * NOTE: This function depends on SUBSECTION_NAMES array. So if the cleaner solution is implemented
+     * from the web side, this function won't be necessary anymore, along with the SUBSECTION_NAMES array
+     * as the sections will be received labeled automatically from web side.
+     */
+    protected labelSections(): void {
+        for (let index = 0; index < this.sections?.length; index++) {
+            if (SUBSECTION_NAMES.includes(this.sections[index]?.name)) {
+                (this.sections[index] as CoreCourseSectionToDisplay).isSubSection = true;
+            }
+        }
+    }
+
+    /**
+     * Organize sections and sub-sections (sub-sections under nearest parent)
+     * assuming sections are received correctly ordered from web side.
+     */
+    protected organizeSections(): void {
+        let index = 0;
+        while (index !== this.sections?.length) {
+            const section = this.sections[index] as CoreCourseSectionToDisplay;
+            if (!section?.isSubSection) {
+                const startIndex = index + 1;
+                while (startIndex !== this.sections?.length) {
+                    const subSection = this.sections[startIndex] as CoreCourseSectionToDisplay;
+                    if (!subSection?.isSubSection) {
+                        index = startIndex - 1;
+                        break;
+                    }
+                    if (subSection?.isSubSection) {
+                        section.contents?.push(subSection);
+                        this.sections.splice(startIndex, 1);
+                    }
+                }
+            }
+            index++;
+        }
+    }
+    // ------------- SYNCOLOGY: end ------------//
+
+    // -------- SYNCOLOGY: Setup Sections Logic ------- //
+    /**
+     * Set sections by integrating sub-sections structure.
+     * Parent section has summary.
+     */
+    protected setupSections(): void {
+        if (!this.sections || this.sections.length === 0) {
+            return;
+        }
+
+        // Structure sub-sections
+
+        // Label main sections and subsections
+        this.labelSections();
+
+        // Organize sections structure after labeling
+        this.organizeSections();
+    }
+    // ------------- SYNCOLOGY: end ------------//
 
 }

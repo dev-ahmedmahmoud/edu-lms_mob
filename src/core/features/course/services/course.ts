@@ -72,6 +72,9 @@ import { CORE_SITEHOME_PAGE_NAME } from '@features/sitehome/constants';
 import { CoreDom } from '@singletons/dom';
 import { CoreCourseModuleDelegate } from './module-delegate';
 import { ModFeature, ModPurpose } from '@addons/mod/constants';
+// -------- SYNCOLOGY: Child Course Import ------- //
+import { Child } from '@features/courses/services/child-courses';
+// ------------- SYNCOLOGY: end ------------//
 
 export type CoreCourseProgressUpdated = { progress: number; courseId: number };
 
@@ -1602,6 +1605,9 @@ export type CoreCourseBlock = {
         contentformat: CoreTextFormat; // Content format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN).
         footer: string; // Block footer.
         files: CoreWSExternalFile[];
+        // -------- SYNCOLOGY: Child Content Structure ------- //
+        localContents: { children: Child[] };
+        // ------------- SYNCOLOGY: end ------------//
     }; // Block contents (if required).
     configs?: { // Block instance and plugin configuration settings.
         name: string; // Name.

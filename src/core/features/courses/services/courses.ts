@@ -481,6 +481,9 @@ export class CoreCoursesProvider {
         field: string = '',
         value: string | number = '',
         options: CoreSitesCommonWSOptions = {},
+        // -------- SYNCOLOGY: Student ID Param ------- //
+        studentId?: number,
+        // ------------- SYNCOLOGY: end ------------//
     ): WSObservable<CoreCourseSearchedData[]> {
         return asyncObservable(async () => {
             const siteId = options.siteId || CoreSites.getCurrentSiteId();
@@ -502,6 +505,10 @@ export class CoreCoursesProvider {
                 cacheKey: this.getCoursesByFieldCacheKey(field, value),
                 updateFrequency: CoreCacheUpdateFrequency.RARELY,
                 ...CoreSites.getReadingStrategyPreSets(options.readingStrategy),
+                // -------- SYNCOLOGY: Bypass Cache for Student ------- //
+                getFromCache: studentId ? false : true,
+                saveToCache: studentId ? false : true,
+                // ------------- SYNCOLOGY: end ------------//
             };
 
             const observable = site.readObservable<CoreCourseGetCoursesByFieldWSResponse>(

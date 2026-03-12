@@ -100,8 +100,8 @@
                     <p class="item-heading">{{ 'core.settings.preferences' | translate }}</p>
                 </ion-label>
             </ion-item>
-
-            @if (displayContactSupport) {
+            <!-- Syncology: false instead of displayContactSupport flag to hide it -->
+            @if (false) {
                 <ion-item button (click)="contactSupport($event)" [attr.aria-label]="'core.user.support' | translate" [detail]="true"
                     detailIcon="open-outline" class="core-user-menu-support">
                     <ion-icon name="fas-envelope" slot="start" aria-hidden="true" />

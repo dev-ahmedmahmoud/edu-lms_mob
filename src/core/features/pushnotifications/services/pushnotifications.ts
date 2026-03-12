@@ -395,15 +395,61 @@ export class CorePushNotificationsProvider {
                 CoreText.parseJSON<Record<string, string|number>>(rawData.customdata, {}) : rawData.customdata,
         });
 
+        // Normalize legacy or alternative payload keys (e.g. from iOS FCM wrapping APNS)
+        // so all push click handlers receive a consistent data structure.
+        if (rawData.notification !== undefined && data.notif === undefined) {
+            data.notif = String(rawData.notification);
+        }
+        if (rawData.component !== undefined && data.moodlecomponent === undefined) {
+            data.moodlecomponent = String(rawData.component);
+        }
+
+        // Fallback: If siteurl is missing but wwwroot is present (legacy or specific server config), use it.
+        if (!data.siteurl && rawData.wwwroot) {
+            data.siteurl = rawData.wwwroot;
+        }
+
         let site: CoreSite | undefined;
 
         if (data.site) {
-            site = await CoreSites.getSite(data.site);
-        } else if (data.siteurl) {
-            site = await CoreSites.getSiteByUrl(data.siteurl);
+            try {
+                site = await CoreSites.getSite(data.site);
+            } catch {
+                // Site not found in local DB.
+            }
         }
 
-        data.site = site?.getId();
+        // Try to find the site using the URL and User ID (if present).
+        // This is needed for multi-account scenarios where multiple accounts share the same URL.
+        if (!site && data.siteurl && data.usertoid) {
+            const sites = await CoreSites.getSites();
+            const matchingSite = sites.find((s) => s.siteUrl === data.siteurl && s.userId === Number(data.usertoid));
+
+            if (matchingSite) {
+                 try {
+                    site = await CoreSites.getSite(matchingSite.id);
+                } catch {
+                    // Ignore error.
+                }
+            }
+        }
+
+        if (!site && data.siteurl) {
+            try {
+                site = await CoreSites.getSiteByUrl(data.siteurl);
+            } catch {
+                // Site not found by URL.
+            }
+        }
+
+        // If we found the site object, use its ID.
+        // If not, preserve the original data.site ID if it existed.
+        // This is crucial: if CoreSites.getSite() fails (e.g. cross-account context issue),
+        // we must NOT overwrite data.site with undefined, otherwise the navigation handler
+        // will default to the *current* site, causing a permission denied error on the wrong account.
+        data.site = site?.getId() ?? data.site;
+
+
 
         if (!CoreUtils.isTrueOrOne(data.foreground)) {
             // The notification was clicked.
@@ -888,9 +934,11 @@ export type CorePushNotificationsNotificationBasicRawData = {
     foreground?: boolean; // Whether the app was in foreground.
     'image-type'?: string; // How to display the notification image.
     moodlecomponent?: string; // Moodle component that triggered the notification.
+    component?: string; // Alternative to moodlecomponent.
     name?: string; // A name to identify the type of notification.
     notId?: string; // Notification ID.
     notif?: string; // "1" if it's a notification, "0" if it's a Moodle message.
+    notification?: string; // Alternative to notif.
     site?: string; // ID of the site sending the notification.
     siteurl?: string; // URL of the site the notification is related to.
     usertoid?: string; // ID of user receiving the push.
@@ -901,6 +949,7 @@ export type CorePushNotificationsNotificationBasicRawData = {
     summaryText?: string; // Notification summary text. "Extra" feature.
     sender?: string; // Name of the user who sent the message. "Extra" feature.
     senderImage?: string; // Image of the user who sent the message. "Extra" feature.
+    wwwroot?: string; // URL of the site, used as fallback for siteurl.
 };
 
 /**

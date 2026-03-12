@@ -1,0 +1,41 @@
+:host {
+    ion-avatar {
+        margin: auto;
+        height: 100px;
+        width: 100px;
+    }
+
+    .scroll-zoom-wrapper {
+        white-space: nowrap;
+    }
+
+    .child_course_card {
+        width: 300px !important;
+        display: inline-block;
+    }
+
+    ion-scroll {
+        min-height: 160px;
+        height: auto;
+
+        .scroll-content {
+            padding: 0px !important;
+        }
+    }
+
+    .child_course_avatar {
+        margin: auto;
+        width: 250px;
+        height: 100px;
+    }
+
+    .child_course_img {
+        width: 250px;
+        height: 100px;
+    }
+
+    ion-select {
+        min-width: 100%;
+        background-color: white;
+    }
+}

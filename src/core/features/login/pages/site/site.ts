@@ -39,7 +39,6 @@ import { CoreErrorAccordion } from '@services/error-accordion';
 import { CoreUserSupportConfig } from '@features/user/classes/support/support-config';
 import { CoreUserGuestSupportConfig } from '@features/user/classes/support/guest-support-config';
 import { CoreLoginError } from '@classes/errors/loginerror';
-import { CorePlatform } from '@services/platform';
 import { CoreReferrer } from '@services/referrer';
 import { CoreSitesFactory } from '@services/sites-factory';
 import { ONBOARDING_DONE } from '@features/login/constants';
@@ -52,6 +51,9 @@ import { CorePromiseUtils } from '@singletons/promise-utils';
 import { CoreCountries } from '@singletons/countries';
 import { CoreAlerts } from '@services/overlays/alerts';
 import { CoreSharedModule } from '@/core/shared.module';
+// -------- SYNCOLOGY: Client Configuration ------- //
+import { sites, siteImage } from '../../../../../syncology/configs';
+// ------------- SYNCOLOGY: end ------------//
 
 /**
  * Site (url) chooser when adding a new site.
@@ -82,6 +84,9 @@ export default class CoreLoginSitePage implements OnInit {
     enteredSiteUrl?: CoreLoginSiteInfoExtended;
     siteFinderSettings!: CoreLoginSiteFinderSettings;
     appName = CoreConstants.CONFIG.appname;
+    // -------- SYNCOLOGY: Client Configuration ------- //
+    siteImage = siteImage;
+    // ------------- SYNCOLOGY: end ------------//
 
     protected formBuilder = inject(FormBuilder);
 
@@ -91,6 +96,13 @@ export default class CoreLoginSitePage implements OnInit {
     async ngOnInit(): Promise<void> {
         let url = '';
         this.siteSelector = CoreConstants.CONFIG.multisitesdisplay;
+
+        // -------- SYNCOLOGY: Auto-connect Single Site ------- //
+        // Auto-connect if single site.
+        if (sites.length === 1) {
+             this.connect(sites[0].url);
+        }
+        // ------------- SYNCOLOGY: end ------------//
 
         const siteFinderSettings: Partial<CoreLoginSiteFinderSettings> = CoreConstants.CONFIG.sitefindersettings || {};
         this.siteFinderSettings = {
@@ -103,27 +115,28 @@ export default class CoreLoginSitePage implements OnInit {
             ...siteFinderSettings,
         };
 
+        // -------- SYNCOLOGY: Fixed Sites Initialization ------- //
         // Load fixed sites if they're set.
-        const sites = await CoreLoginHelper.getAvailableSites();
+        url = await this.initSiteSelector(sites);
+        // if (sites.length) {
+        //     url = await this.initSiteSelector();
+        // } else {
+        //     url = await this.consumeInstallReferrerUrl() ?? '';
 
-        if (sites.length) {
-            url = await this.initSiteSelector();
-        } else {
-            url = await this.consumeInstallReferrerUrl() ?? '';
+        //     const showOnboarding = CoreConstants.CONFIG.enableonboarding && !CorePlatform.isIOS();
 
-            const showOnboarding = CoreConstants.CONFIG.enableonboarding && !CorePlatform.isIOS();
+        //     if (url) {
+        //         this.connect(url);
 
-            if (url) {
-                this.connect(url);
-
-                if (showOnboarding) {
-                    // Don't display onboarding in this case, and don't display it again later.
-                    CoreConfig.set(ONBOARDING_DONE, 1);
-                }
-            } else if (showOnboarding) {
-                this.initOnboarding();
-            }
-        }
+        //         if (showOnboarding) {
+        //             // Don't display onboarding in this case, and don't display it again later.
+        //             CoreConfig.set(ONBOARDING_DONE, 1);
+        //         }
+        //     } else if (showOnboarding) {
+        //         this.initOnboarding();
+        //     }
+        // }
+        // ------------- SYNCOLOGY: end ------------//
 
         this.showScanQR = CoreLoginHelper.displayQRInSiteScreen();
 
@@ -153,14 +166,14 @@ export default class CoreLoginSitePage implements OnInit {
         this.showKeyboard = !!CoreNavigator.getRouteBooleanParam('showKeyboard');
     }
 
+    // -------- SYNCOLOGY: Fixed Sites Initialization ------- //
     /**
      * Initialize the site selector.
      *
      * @returns URL of the first site.
      */
-    protected async initSiteSelector(): Promise<string> {
-        const availableSites = await CoreLoginHelper.getAvailableSites();
-        this.fixedSites = this.extendCoreLoginSiteInfo(<CoreLoginSiteInfoExtended[]> availableSites);
+    protected async initSiteSelector(schoolSites: CoreLoginSiteInfoExtended[]): Promise<string> {
+        this.fixedSites = schoolSites;
         this.siteSelector = 'list'; // In case it's not defined
 
         // Do not show images if none are set.
@@ -172,6 +185,7 @@ export default class CoreLoginSitePage implements OnInit {
 
         return this.fixedSites[0].url;
     }
+    // ------------- SYNCOLOGY: end ------------//
 
     /**
      * Consume install referrer URL.
@@ -495,9 +509,14 @@ export default class CoreLoginSitePage implements OnInit {
      *
      * @param event Received Event.
      */
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    filterChanged(event?: any): void {
-        const newValue = event?.target.value?.trim().toLowerCase();
+    /**
+     * The filter has changed.
+     *
+     * @param event Received Event.
+     */
+    filterChanged(event?: Event): void {
+        const target = event?.target as HTMLInputElement;
+        const newValue = target?.value?.trim().toLowerCase();
         if (!newValue || !this.fixedSites) {
             this.filteredSites = this.fixedSites;
         } else {
@@ -657,11 +676,13 @@ export default class CoreLoginSitePage implements OnInit {
 
 }
 
+// -------- SYNCOLOGY: Export the type ------- //
 /**
  * Extended data for UI implementation.
  */
-type CoreLoginSiteInfoExtended = CoreLoginSiteInfo & {
+export type CoreLoginSiteInfoExtended = CoreLoginSiteInfo & {
     noProtocolUrl: string; // Url wihtout protocol.
     location: string; // City + country.
     title: string; // Name + alias.
 };
+// ------------- SYNCOLOGY: end ------------//

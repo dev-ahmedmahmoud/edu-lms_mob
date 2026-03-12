@@ -100,13 +100,16 @@ export class AddonFilterMediaPluginVideoJSService {
      * @param video Video element.
      */
     treatYoutubeVideos(video: HTMLElement): void {
-        if (!video.classList.contains('video-js')) {
-            return;
-        }
-
         const dataSetupString = video.getAttribute('data-setup') || video.getAttribute('data-setup-lazy') || '{}';
         const data = CoreText.parseJSON<VideoJSOptions>(dataSetupString, {});
-        const youtubeUrl = data.techOrder?.[0] == 'youtube' && CoreUrl.getYoutubeEmbedUrl(data.sources?.[0]?.src);
+        let youtubeUrl = data.techOrder?.[0] == 'youtube' && CoreUrl.getYoutubeEmbedUrl(data.sources?.[0]?.src);
+
+        if (!youtubeUrl) {
+             const src = video.getAttribute('src') || video.querySelector('source')?.getAttribute('src');
+             if (src) {
+                 youtubeUrl = CoreUrl.getYoutubeEmbedUrl(src);
+             }
+        }
 
         if (!youtubeUrl) {
             return;
@@ -114,11 +117,33 @@ export class AddonFilterMediaPluginVideoJSService {
 
         const iframe = document.createElement('iframe');
         iframe.id = video.id;
-        iframe.src = CoreSites.getCurrentSite()?.fixRefererForUrl(youtubeUrl) || youtubeUrl;
-        iframe.setAttribute('frameborder', '0');
-        iframe.setAttribute('allowfullscreen', '1');
         iframe.width = '100%';
         iframe.height = '300';
+        iframe.setAttribute('frameborder', '0');
+        iframe.setAttribute('allowfullscreen', '1');
+        iframe.setAttribute('playsinline', '1');
+
+        // Extract Video ID from the confirmed YouTube URL
+        // CoreUrl.getYoutubeEmbedUrl returns format like https://www.youtube.com/embed/VIDEO_ID?feature=oembed
+        // a simple regex can extract the VIDEO_ID
+        const videoIdMatch = youtubeUrl.match(/\/embed\/([^?#]+)/);
+        const videoId = videoIdMatch ? videoIdMatch[1] : '';
+
+        // --- REMOTE PROXY CONFIGURATION ---
+        // TODO: REPLACE THIS WITH YOUR DEPLOYED CLOUDFLARE PAGES URL
+        const REMOTE_PROXY_URL = 'https://youtube-relay.a-samyabdelhay.workers.dev';
+        // ----------------------------------
+
+        // Point to remote proxy
+        if (REMOTE_PROXY_URL && REMOTE_PROXY_URL.includes('workers.dev')) {
+             iframe.src = REMOTE_PROXY_URL + '?v=' + encodeURIComponent(videoId) + '&playsinline=1';
+        } else {
+             // Fallback/Warning if URL is not set (loops back to local or shows error)
+             // utilizing the local asset as a fallback for now, though likely to fail based on previous attempts
+             const localPath = window.location.origin + '/assets/youtube_embed.html';
+             iframe.src = localPath + '?v=' + encodeURIComponent(videoId) + '&playsinline=1';
+             console.warn('YouTube Remote Proxy URL not set. Using local fallback (may fail on iOS).');
+        }
 
         // Replace video tag by the iframe.
         video.parentNode?.replaceChild(iframe, video);
