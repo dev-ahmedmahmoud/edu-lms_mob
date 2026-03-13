@@ -148,5 +148,28 @@
     "branding": {
       "image": "assets/img/pioneers.png"
     }
+  },
+  {
+    "id": "edusync",
+    "name": "EduSync",
+    "appId": {
+      "android": "tech.syncology.edusync",
+      "ios": "tech.syncology.edusync"
+    },
+    "version": {
+      "code": "51000",
+      "name": "5.1"
+    },
+    "moodle": [
+      {
+        "url": "https://edusync.syncology.tech",
+        "siteName": "EduSync",
+        "alias": "EduSync",
+        "image": "assets/img/edusync.png"
+      }
+    ],
+    "branding": {
+      "image": "assets/img/edusync.png"
+    }
   }
 ]
