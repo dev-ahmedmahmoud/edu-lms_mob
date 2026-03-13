@@ -50,18 +50,34 @@ if (platform === 'ios' && client.appId.ios) {
 
 // Update Version
 if (client.version) {
-    configXml = configXml.replace(/version="[^"]*"/, `version="${client.version.name}"`);
+    // Determine the run number
+    const runNumber = process.env.GITHUB_RUN_NUMBER ? parseInt(process.env.GITHUB_RUN_NUMBER, 10) : 0;
+
+    // Instead of using '5.1.0', crop to '5.1' and append the runNumber
+    const baseVersionString = client.version.name.split('.').slice(0, 2).join('.');
+    const newAppVersion = runNumber > 0 ? `${baseVersionString}.${runNumber}` : client.version.name;
+
+    // Use strict (\s) bound to avoid matching ios-CFBundleVersion or android-versionCode
+    configXml = configXml.replace(/(\s)version="[^"]*"/, `$1version="${newAppVersion}"`);
 
     // Auto-increment version code using GitHub Run Number if available to prevent Google Play upload errors
-    // Initial Base: 51000. Run Number: e.g. 50. New Code: 51050.
-    const runNumber = process.env.GITHUB_RUN_NUMBER ? parseInt(process.env.GITHUB_RUN_NUMBER, 10) : 0;
+    // Initial Base: 51000. Run Number: e.g. 50. New Code: 51500.
     const baseCode = parseInt(client.version.code, 10);
-    const newVersionCode = baseCode + runNumber;
+    const newVersionCode = baseCode + (runNumber * 10);
 
-    console.log(`Setting Android Version Code: ${newVersionCode} (Base: ${baseCode} + Run: ${runNumber})`);
+    console.log(`Setting Version Code: ${newVersionCode} (Base: ${baseCode} + Run: ${runNumber})`);
     configXml = configXml.replace(/android-versionCode="[^"]*"/, `android-versionCode="${newVersionCode}"`);
 
-    configXml = configXml.replace(/ios-CFBundleVersion="[^"]*"/, `ios-CFBundleVersion="${client.version.name}.${runNumber}"`); // Often matches version name or specific build num
+    configXml = configXml.replace(/ios-CFBundleVersion="[^"]*"/, `ios-CFBundleVersion="${newVersionCode}"`);
+
+    // Replace versionCode (generic fallback string parsed by Cordova for both sometimes)
+    configXml = configXml.replace(/(\s)versionCode="[^"]*"/, `$1versionCode="${newVersionCode}"`);
+
+    // Replace hardcoded CFBundleShortVersionString in iOS plist edit-config (this overrides everything else!)
+    configXml = configXml.replace(/(<edit-config[^>]*target="CFBundleShortVersionString"[^>]*>\s*<string>)[^<]*(<\/string>\s*<\/edit-config>)/g, `$1${newAppVersion}$2`);
+
+    // Replace hardcoded version in AppendUserAgent preference
+    configXml = configXml.replace(/(<preference name="AppendUserAgent" value="MoodleMobile )[^"]*("\s*\/>)/g, `$1${newAppVersion} (${newVersionCode})$2`);
 }
 
 // Update Name
@@ -71,7 +87,32 @@ configXml = configXml.replace(/<name>[^<]*<\/name>/, `<name>${client.name}</name
 fs.writeFileSync(configXmlPath, configXml, 'utf8');
 console.log('Updated config.xml');
 
-// 1.1 Update moodle.config.json
+// 1.1 Update package.json to prevent Cordova from overriding the version during CI build
+const packageJsonPath = path.join(projectRoot, 'package.json');
+const packageLockJsonPath = path.join(projectRoot, 'package-lock.json');
+if (fs.existsSync(packageJsonPath) && client.version) {
+    let packageJsonContent = fs.readFileSync(packageJsonPath, 'utf8');
+    // We determine the same newAppVersion
+    const runNumber = process.env.GITHUB_RUN_NUMBER ? parseInt(process.env.GITHUB_RUN_NUMBER, 10) : 0;
+    const baseVersionString = client.version.name.split('.').slice(0, 2).join('.');
+    const newAppVersion = runNumber > 0 ? `${baseVersionString}.${runNumber}` : client.version.name;
+
+    // Replace "version": "..." safely at the root level (usually found quickly at the top)
+    packageJsonContent = packageJsonContent.replace(/"version":\s*"[^"]*"/, `"version": "${newAppVersion}"`);
+    fs.writeFileSync(packageJsonPath, packageJsonContent, 'utf8');
+    console.log(`Updated package.json version to: ${newAppVersion}`);
+
+    if (fs.existsSync(packageLockJsonPath)) {
+        let packageLockContent = fs.readFileSync(packageLockJsonPath, 'utf8');
+        // Replace first two occurrences of "version": "..." which correspond to root project version
+        packageLockContent = packageLockContent.replace(/"version":\s*"[^"]*"/, `"version": "${newAppVersion}"`);
+        packageLockContent = packageLockContent.replace(/"version":\s*"[^"]*"/, `"version": "${newAppVersion}"`);
+        fs.writeFileSync(packageLockJsonPath, packageLockContent, 'utf8');
+        console.log(`Updated package-lock.json version to: ${newAppVersion}`);
+    }
+}
+
+// 1.2 Update moodle.config.json
 const moodleConfigPath = path.join(projectRoot, 'moodle.config.json');
 if (fs.existsSync(moodleConfigPath)) {
     const moodleConfig = JSON.parse(fs.readFileSync(moodleConfigPath, 'utf8'));
@@ -86,6 +127,13 @@ if (fs.existsSync(moodleConfigPath)) {
     }
 
     moodleConfig.appname = client.name;
+
+    if (client.version) {
+        const runNumber = process.env.GITHUB_RUN_NUMBER ? parseInt(process.env.GITHUB_RUN_NUMBER, 10) : 0;
+        const baseVersionString = client.version.name.split('.').slice(0, 2).join('.');
+        moodleConfig.versionname = runNumber > 0 ? `${baseVersionString}.${runNumber}` : client.version.name;
+        moodleConfig.versioncode = parseInt(client.version.code, 10) + (runNumber * 10);
+    }
 
     fs.writeFileSync(moodleConfigPath, JSON.stringify(moodleConfig, null, 4), 'utf8');
     console.log(`Updated moodle.config.json for platform: ${platform}`);
