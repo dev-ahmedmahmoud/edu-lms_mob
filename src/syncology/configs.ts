@@ -13,6 +13,17 @@
 // limitations under the License.
 import { CoreLoginSiteInfoExtended } from '@features/login/pages/site/site';
 
-export const siteImage = '';
+export const siteImage = 'assets/img/edusync.png';
 
-export const sites: CoreLoginSiteInfoExtended[] = [];
+export const sites: CoreLoginSiteInfoExtended[] = [
+    {
+        name: 'EduSync',
+        url: 'https://edusync.syncology.tech',
+        imageurl: 'assets/img/edusync.png',
+        location: 'EduSync',
+        title: 'EduSync',
+        alias: 'EduSync',
+        city: '',
+        noProtocolUrl: 'edusync.syncology.tech',
+    },
+];
