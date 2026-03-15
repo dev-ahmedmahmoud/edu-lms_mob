@@ -75,9 +75,10 @@ jobs:
             console.log(`Calculated Clients: ${JSON.stringify(targetClients)}`);
             console.log(`Calculated Platform: ${targetPlatform}`);
 
-            // Output to GitHub Actions
+            // Output to GitHub Actions with both lowercase and uppercase IDs for dynamic lookups
             const fsOut = require("fs");
-            const matrixJson = JSON.stringify(targetClients);
+            const matrixData = targetClients.map(id => ({ id: id, upperId: id.toUpperCase() }));
+            const matrixJson = JSON.stringify(matrixData);
             fsOut.appendFileSync(process.env.GITHUB_OUTPUT, `matrix=${matrixJson}\n`);
             fsOut.appendFileSync(process.env.GITHUB_OUTPUT, `platform=${targetPlatform}\n`);
           '
@@ -106,7 +107,7 @@ jobs:
         run: npm install -g @ionic/cli cordova cordova-res
 
       - name: Apply Client Configuration
-        run: node scripts/apply_client_config.js --client-id ${{ matrix.client }} --platform ${{ matrix.platform }}
+        run: node scripts/apply_client_config.js --client-id ${{ matrix.client.id }} --platform ${{ matrix.platform }}
 
       - name: Patch iOS Source
         run: node scripts/patch_ios_source.js
@@ -115,10 +116,10 @@ jobs:
         run: |
           git config --global user.name "GitHub Action"
           git config --global user.email "action@github.com"
-          BRANCH_NAME="debug/${{ matrix.client }}/${{ matrix.platform }}"
+          BRANCH_NAME="debug/${{ matrix.client.id }}/${{ matrix.platform }}"
           git checkout -b $BRANCH_NAME
           git add .
-          git commit -m "Debug: Generated files for ${{ matrix.client }} ${{ matrix.platform }}"
+          git commit -m "Debug: Generated files for ${{ matrix.client.id }} ${{ matrix.platform }}"
           git push origin $BRANCH_NAME --force
 
       - name: Decrypt Android Keys (for reference/validation if needed, though this is iOS job)
@@ -145,25 +146,14 @@ jobs:
           MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }}
           IOS_P12_BASE64: ${{ secrets.IOS_P12_BASE64 }}
           IOS_P12_PASSWORD: ${{ secrets.IOS_P12_PASSWORD }}
-          # Client-specific Provisioning Profiles (add new clients here)
-          TMS_IOS_PROVISIONING_PROFILE_BASE64: ${{ secrets.TMS_IOS_PROVISIONING_PROFILE_BASE64 }}
-          FUTURE_IOS_PROVISIONING_PROFILE_BASE64: ${{ secrets.FUTURE_IOS_PROVISIONING_PROFILE_BASE64 }}
-          IRTIQAA_IOS_PROVISIONING_PROFILE_BASE64: ${{ secrets.IRTIQAA_IOS_PROVISIONING_PROFILE_BASE64 }}
-          LEADERS_IOS_PROVISIONING_PROFILE_BASE64: ${{ secrets.LEADERS_IOS_PROVISIONING_PROFILE_BASE64 }}
-          ROYAL_IOS_PROVISIONING_PROFILE_BASE64: ${{ secrets.ROYAL_IOS_PROVISIONING_PROFILE_BASE64 }}
-          PIONEERS_IOS_PROVISIONING_PROFILE_BASE64: ${{ secrets.PIONEERS_IOS_PROVISIONING_PROFILE_BASE64 }}
-          # Current client ID
-          CLIENT_ID: ${{ matrix.client }}
+          # Dynamically fetch the client-specific Provisioning Profile using the uppercase ID
+          PROFILE_BASE64: ${{ secrets[format('{0}_IOS_PROVISIONING_PROFILE_BASE64', matrix.client.upperId)] }}
+          # Current client info
+          CLIENT_ID: ${{ matrix.client.id }}
+          CLIENT_UPPER: ${{ matrix.client.upperId }}
         run: |
-          # Get the uppercase client ID for secret lookup
-          CLIENT_UPPER=$(echo "$CLIENT_ID" | tr '[:lower:]' '[:upper:]')
-
-          # Dynamically get the provisioning profile secret
-          SECRET_VAR_NAME="${CLIENT_UPPER}_IOS_PROVISIONING_PROFILE_BASE64"
-          PROFILE_BASE64="${!SECRET_VAR_NAME}"
-
           if [ -z "$PROFILE_BASE64" ]; then
-            echo "Error: Provisioning profile secret not found for client: $CLIENT_ID (expected: $SECRET_VAR_NAME)"
+            echo "Error: Provisioning profile secret not found for client: $CLIENT_ID (expected: ${CLIENT_UPPER}_IOS_PROVISIONING_PROFILE_BASE64)"
             exit 1
           fi
 
@@ -223,16 +213,16 @@ jobs:
         run: npm install -g @ionic/cli cordova cordova-res
 
       - name: Apply Client Configuration
-        run: node scripts/apply_client_config.js --client-id ${{ matrix.client }} --platform ${{ matrix.platform }}
+        run: node scripts/apply_client_config.js --client-id ${{ matrix.client.id }} --platform ${{ matrix.platform }}
 
       - name: Commit & Push Debug Branch
         run: |
           git config --global user.name "GitHub Action"
           git config --global user.email "action@github.com"
-          BRANCH_NAME="debug/${{ matrix.client }}/${{ matrix.platform }}"
+          BRANCH_NAME="debug/${{ matrix.client.id }}/${{ matrix.platform }}"
           git checkout -b $BRANCH_NAME
           git add .
-          git commit -m "Debug: Generated files for ${{ matrix.client }} ${{ matrix.platform }}"
+          git commit -m "Debug: Generated files for ${{ matrix.client.id }} ${{ matrix.platform }}"
           git push origin $BRANCH_NAME --force
 
       - name: Decode Android Keystore & Config
