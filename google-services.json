@@ -1,42 +1,52 @@
 {
   "project_info": {
-    "project_number": "",
-    "firebase_url": "",
-    "project_id": "",
-    "storage_bucket": ""
+    "project_number": "834809612015",
+    "firebase_url": "https://synconnect-test.firebaseio.com",
+    "project_id": "synconnect-test",
+    "storage_bucket": "synconnect-test.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:111111111111:android:1111111111111111",
+        "mobilesdk_app_id": "1:834809612015:android:e2b2cede360771771f3d1a",
         "android_client_info": {
-          "package_name": "com.moodle.moodlemobile"
+          "package_name": "tech.syncology.edusync"
         }
       },
       "oauth_client": [
         {
-          "client_id": "",
+          "client_id": "834809612015-jn6tascm8g55rln11jjvedr0e1e53bqk.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "tech.syncology.edusync",
+            "certificate_hash": "ae9d0aebe9ead1f764ba1fcba5fd40018c382b6f"
+          }
+        },
+        {
+          "client_id": "834809612015-9uluibogj3idom5j25vjbe8o6usb0bah.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": ""
-        },
-        {
-          "current_key": ""
+          "current_key": "AIzaSyBcE0AE7E_D3YnJOBxwWVm7j2Abi4YlvKg"
         }
       ],
       "services": {
-        "analytics_service": {
-          "status": 1
-        },
         "appinvite_service": {
-          "status": 1,
-          "other_platform_oauth_client": []
-        },
-        "ads_service": {
-          "status": 2
+          "other_platform_oauth_client": [
+            {
+              "client_id": "834809612015-9uluibogj3idom5j25vjbe8o6usb0bah.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "834809612015-3l2jl7n590ncm0k215rltg9aqs0s5t0j.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.future.edusync"
+              }
+            }
+          ]
         }
       }
     }
